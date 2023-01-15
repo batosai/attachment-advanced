@@ -198,7 +198,7 @@ export const attachment: AttachmentDecorator = (options) => {
     /**
      * Separate attachment options from the column options
      */
-    const { disk, folder, preComputeUrl, ...columnOptions } = options || {}
+    const { disk, folder, preComputeUrl, variant, variants, ...columnOptions } = options || {}
 
     /**
      * Define attachments array on the model constructor
@@ -209,7 +209,10 @@ export const attachment: AttachmentDecorator = (options) => {
      * Push current column (one using the @attachment decorator) to
      * the attachments array
      */
-    Model['attachments'].push({ property, options: { disk, folder, preComputeUrl } })
+    Model['attachments'].push({
+      property,
+      options: { disk, folder, preComputeUrl, variant, variants },
+    })
 
     /**
      * Define the property as a column too

@@ -36,6 +36,8 @@ declare module '@ioc:Adonis/Addons/AttachmentAdvanced' {
   export type AttachmentOptions = {
     disk?: keyof DisksList
     folder?: string
+    variant?: string
+    variants?: Array<string>
     preComputeUrl?:
       | boolean
       | ((disk: DriverContract, attachment: AttachmentContract) => Promise<string>)

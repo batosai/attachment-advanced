@@ -188,8 +188,35 @@ export class Attachment implements AttachmentContract {
     return disk ? Drive.use(disk) : Drive.use()
   }
 
-  private async generateVariants() {
+  /**
+   * Generate variants
+   */
+  private getOptionVariants() {
     const { variants } = Attachment.getConfig()
+    let versions = {}
+    console.log(this.options?.variants)
+    if (this.options?.variants) {
+      this.options?.variants.forEach((v) => {
+        versions[v] = variants[v]
+      })
+    }
+
+    if (this.options?.variant) {
+      versions[this.options?.variant] = variants[this.options?.variant]
+    }
+
+    if (Object.keys(versions).length === 0) {
+      versions = variants
+    }
+
+    return versions
+  }
+
+  /**
+   * Generate variants
+   */
+  private async generateVariants() {
+    const variants = this.getOptionVariants()
 
     for (const key in variants) {
       const variant = new Variant(this.file)
@@ -204,6 +231,9 @@ export class Attachment implements AttachmentContract {
     }
   }
 
+  /**
+   * Delete variants
+   */
   private async deleteVariants() {
     for (const key in this.variants) {
       await this.getDisk().delete(this.variants[key].name)
