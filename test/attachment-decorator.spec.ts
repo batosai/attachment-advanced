@@ -14,7 +14,7 @@ import { join } from 'path'
 import supertest from 'supertest'
 import { createServer } from 'http'
 import { ApplicationContract } from '@ioc:Adonis/Core/Application'
-import { AttachmentContract } from '@ioc:Adonis/Addons/AttachmentLite'
+import { AttachmentContract } from '@ioc:Adonis/Addons/AttachmentAdvanced'
 import { BodyParserMiddleware } from '@adonisjs/bodyparser/build/src/BodyParser'
 
 import { Attachment } from '../src/Attachment'

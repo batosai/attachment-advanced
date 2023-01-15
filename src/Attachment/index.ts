@@ -17,8 +17,10 @@ import type {
   AttachmentOptions,
   AttachmentContract,
   AttachmentAttributes,
+  AttachmentConfig,
   AttachmentConstructorContract,
-} from '@ioc:Adonis/Addons/AttachmentLite'
+} from '@ioc:Adonis/Addons/AttachmentAdvanced'
+import { Variant } from './variant'
 
 const REQUIRED_ATTRIBUTES = ['name', 'size', 'extname', 'mimeType']
 
@@ -28,6 +30,7 @@ const REQUIRED_ATTRIBUTES = ['name', 'size', 'extname', 'mimeType']
  */
 export class Attachment implements AttachmentContract {
   private static drive: DriveManagerContract
+  private static attachmentConfig: AttachmentConfig
 
   /**
    * Refrence to the drive
@@ -44,6 +47,20 @@ export class Attachment implements AttachmentContract {
   }
 
   /**
+   * Refrence to the config
+   */
+  public static getConfig() {
+    return this.attachmentConfig
+  }
+
+  /**
+   * Set the config instance
+   */
+  public static setConfig(config: AttachmentConfig) {
+    this.attachmentConfig = config
+  }
+
+  /**
    * Create attachment instance from the bodyparser
    * file
    */
@@ -52,6 +69,7 @@ export class Attachment implements AttachmentContract {
       extname: file.extname!,
       mimeType: `${file.type}/${file.subtype}`,
       size: file.size!,
+      variants: {},
     }
 
     return new Attachment(attributes, file)
@@ -134,9 +152,17 @@ export class Attachment implements AttachmentContract {
    */
   public isDeleted: boolean
 
+  /**
+   * Object of attachment variants
+   */
+  public variants: any
+
   constructor(private attributes: AttachmentAttributes, private file?: MultipartFileContract) {
     if (this.attributes.name) {
       this.name = this.attributes.name
+    }
+    if (this.attributes.variants) {
+      this.variants = this.attributes.variants
     }
   }
 
@@ -144,13 +170,13 @@ export class Attachment implements AttachmentContract {
    * Generates the name for the attachment and prefixes
    * the folder (if defined)
    */
-  private generateName(): string {
+  private generateName(extname = this.extname): string {
     if (this.name) {
       return this.name
     }
 
     const folder = this.options?.folder
-    return `${folder ? `${folder}/` : ''}${cuid()}.${this.extname}`
+    return `${folder ? `${folder}/` : ''}${cuid()}.${extname}`
   }
 
   /**
@@ -160,6 +186,28 @@ export class Attachment implements AttachmentContract {
     const disk = this.options?.disk
     const Drive = (this.constructor as AttachmentConstructorContract).getDrive()
     return disk ? Drive.use(disk) : Drive.use()
+  }
+
+  private async generateVariants() {
+    const { variants } = Attachment.getConfig()
+
+    for (const key in variants) {
+      const variant = new Variant(this.file)
+      const buffer = await variant.generate({
+        ...variants[key],
+        folder: this.options?.folder,
+      })
+
+      await this.getDisk().put(variant.name, buffer!)
+
+      this.variants[key] = variant.toObject()
+    }
+  }
+
+  private async deleteVariants() {
+    for (const key in this.variants) {
+      await this.getDisk().delete(this.variants[key].name)
+    }
   }
 
   /**
@@ -187,6 +235,8 @@ export class Attachment implements AttachmentContract {
      */
     await this.file!.moveToDisk('./', { name: this.generateName() }, this.options?.disk)
 
+    await this.generateVariants()
+
     /**
      * Assign name to the file
      */
@@ -212,6 +262,7 @@ export class Attachment implements AttachmentContract {
     }
 
     await this.getDisk().delete(this.name)
+    await this.deleteVariants()
     this.isDeleted = true
     this.isPersisted = false
   }
@@ -253,20 +304,69 @@ export class Attachment implements AttachmentContract {
     } else {
       this.url = await disk.getUrl(this.name)
     }
+
+    for (const key in this.variants) {
+      const fileVariantVisibility = await disk.getVisibility(this.variants[key].name)
+      if (fileVariantVisibility === 'private') {
+        this.variants[key].url = await disk.getSignedUrl(this.variants[key].name)
+      } else {
+        this.variants[key].url = await disk.getUrl(this.variants[key].name)
+      }
+    }
   }
 
   /**
    * Returns the URL for the file. Same as "Drive.getUrl()"
    */
-  public getUrl() {
+  public getUrl(variantName?: string | null) {
+    if (variantName) {
+      return this.getDisk().getUrl(this.variants[variantName].name)
+    }
     return this.getDisk().getUrl(this.name)
   }
 
   /**
    * Returns the signed URL for the file. Same as "Drive.getSignedUrl()"
    */
-  public getSignedUrl(options?: ContentHeaders & { expiresIn?: string | number }) {
+  public getSignedUrl(
+    variantName?: string | null,
+    options?: ContentHeaders & { expiresIn?: string | number }
+  ) {
+    if (variantName) {
+      return this.getDisk().getSignedUrl(this.variant(variantName).name, options)
+    }
     return this.getDisk().getSignedUrl(this.name, options)
+  }
+
+  /**
+   * Returns the URL for the file. Same as "Drive.getUrl()"
+   */
+  public getPreviewUrl() {
+    const { preview } = Attachment.getConfig()
+    return this.getDisk().getUrl(this.variant(preview).name)
+  }
+
+  /**
+   * Returns the signed URL for the file. Same as "Drive.getSignedUrl()"
+   */
+  public getPreviewSignedUrl(options?: ContentHeaders & { expiresIn?: string | number }) {
+    const { preview } = Attachment.getConfig()
+    return this.getDisk().getSignedUrl(this.variant(preview).name, options)
+  }
+
+  /**
+   * Returns variant by name
+   */
+  public variant(variantName: string) {
+    return this.variants[variantName]
+  }
+
+  /**
+   * Returns preview
+   */
+  public preview() {
+    const { preview } = Attachment.getConfig()
+    return this.variant(preview)
   }
 
   /**
@@ -279,6 +379,7 @@ export class Attachment implements AttachmentContract {
       extname: this.extname,
       size: this.size,
       mimeType: this.mimeType,
+      variants: this.variants,
     }
   }
 

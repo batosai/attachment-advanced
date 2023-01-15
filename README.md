@@ -95,7 +95,7 @@ import { BaseModel } from '@ioc:Adonis/Lucid/Orm'
 import {
   attachment,
   AttachmentContract
-} from '@ioc:Adonis/Addons/AttachmentLite'
+} from '@ioc:Adonis/Addons/AttachmentAdvanced
 
 class User extends BaseModel {
   @attachment()
@@ -106,7 +106,7 @@ class User extends BaseModel {
 Now you can create an attachment from the user uploaded file as follows.
 
 ```ts
-import { Attachment } from '@ioc:Adonis/Addons/AttachmentLite'
+import { Attachment } from '@ioc:Adonis/Addons/AttachmentAdvanced'
 
 class UsersController {
   public store({ request }: HttpContextContract) {
@@ -125,7 +125,7 @@ The `Attachment.fromFile` creates an instance of the Attachment class from the u
 You can update the property with a newly uploaded user file, and the package will take care of removing the old file and storing the new one.
 
 ```ts
-import { Attachment } from '@ioc:Adonis/Addons/AttachmentLite'
+import { Attachment } from '@ioc:Adonis/Addons/AttachmentAdvanced'
 
 class UsersController {
   public update({ request }: HttpContextContract) {
@@ -300,7 +300,7 @@ import Post from 'App/Models/Post'
 import Drive from '@ioc:Adonis/Core/Drive'
 import { file } from '@ioc:Adonis/Core/Helpers'
 import Factory from '@ioc:Adonis/Lucid/Factory'
-import { Attachment } from '@ioc:Adonis/Addons/AttachmentLite'
+import { Attachment } from '@ioc:Adonis/Addons/AttachmentAdvanced'
 
 export default Factory.define(Post, async ({ faker }) => {
   /**

@@ -8,9 +8,9 @@
  */
 
 declare module '@ioc:Adonis/Core/Application' {
-  import AttachmentLite from '@ioc:Adonis/Addons/AttachmentLite'
+  import AttachmentAdvanced from '@ioc:Adonis/Addons/AttachmentAdvanced'
 
   interface ContainerBindings {
-    'Adonis/Addons/AttachmentLite': typeof AttachmentLite
+    'Adonis/Addons/AttachmentAdvanced': typeof AttachmentAdvanced
   }
 }

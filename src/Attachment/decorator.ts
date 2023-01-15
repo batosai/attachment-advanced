@@ -14,7 +14,7 @@ import type {
   AttachmentOptions,
   AttachmentContract,
   AttachmentDecorator,
-} from '@ioc:Adonis/Addons/AttachmentLite'
+} from '@ioc:Adonis/Addons/AttachmentAdvanced'
 
 import { Attachment } from './index'
 

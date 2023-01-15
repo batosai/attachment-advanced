@@ -9,11 +9,11 @@
 
 import { ApplicationContract } from '@ioc:Adonis/Core/Application'
 
-export default class AttachmentLiteProvider {
+export default class AttachmentAdvancedProvider {
   constructor(protected application: ApplicationContract) {}
 
   public register() {
-    this.application.container.bind('Adonis/Addons/AttachmentLite', () => {
+    this.application.container.bind('Adonis/Addons/AttachmentAdvanced', () => {
       const { Attachment } = require('../src/Attachment')
       const { attachment } = require('../src/Attachment/decorator')
 
@@ -26,9 +26,10 @@ export default class AttachmentLiteProvider {
 
   public boot() {
     this.application.container.withBindings(
-      ['Adonis/Addons/AttachmentLite', 'Adonis/Core/Drive'],
-      (AttachmentLite, Drive) => {
-        AttachmentLite.Attachment.setDrive(Drive)
+      ['Adonis/Addons/AttachmentAdvanced', 'Adonis/Core/Drive', 'Adonis/Core/Config'],
+      (AttachmentAdvanced, Drive, Config) => {
+        AttachmentAdvanced.Attachment.setDrive(Drive)
+        AttachmentAdvanced.Attachment.setConfig(Config.get('attachment', {}))
       }
     )
   }

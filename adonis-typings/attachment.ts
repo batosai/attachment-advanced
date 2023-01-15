@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-declare module '@ioc:Adonis/Addons/AttachmentLite' {
+declare module '@ioc:Adonis/Addons/AttachmentAdvanced' {
   import { ColumnOptions } from '@ioc:Adonis/Lucid/Orm'
   import { MultipartFileContract } from '@ioc:Adonis/Core/BodyParser'
   import {
@@ -26,6 +26,7 @@ declare module '@ioc:Adonis/Addons/AttachmentLite' {
     size: number
     extname: string
     mimeType: string
+    variants: object
   }
 
   /**
@@ -38,6 +39,15 @@ declare module '@ioc:Adonis/Addons/AttachmentLite' {
     preComputeUrl?:
       | boolean
       | ((disk: DriverContract, attachment: AttachmentContract) => Promise<string>)
+  }
+
+  /**
+   * Shape of config accepted by the attachment module.
+   */
+  export type AttachmentConfig = {
+    options?: object
+    preview: string
+    variants: object
   }
 
   /**
@@ -88,6 +98,11 @@ declare module '@ioc:Adonis/Addons/AttachmentLite' {
     isDeleted: boolean
 
     /**
+     * Object of attachment variants
+     */
+    variants: object
+
+    /**
      * Define persistance options
      */
     setOptions(options?: AttachmentOptions): this
@@ -110,12 +125,35 @@ declare module '@ioc:Adonis/Addons/AttachmentLite' {
     /**
      * Returns the URL for the file. Same as "Drive.getUrl()"
      */
-    getUrl(): Promise<string>
+    getUrl(variantName?: string | null): Promise<string>
 
     /**
      * Returns the signed URL for the file. Same as "Drive.getSignedUrl()"
      */
-    getSignedUrl(options?: ContentHeaders & { expiresIn?: string | number }): Promise<string>
+    getSignedUrl(
+      variantName?: string | null,
+      options?: ContentHeaders & { expiresIn?: string | number }
+    ): Promise<string>
+
+    /**
+     * Returns the URL for the preview file. Same as "Drive.getUrl()"
+     */
+    getPreviewUrl(): Promise<string>
+
+    /**
+     * Returns the signed URL for the preview file. Same as "Drive.getSignedUrl()"
+     */
+    getPreviewSignedUrl(options?: ContentHeaders & { expiresIn?: string | number }): Promise<string>
+
+    /**
+     * Returns variant
+     */
+    variant(variantName: string): object
+
+    /**
+     * Returns variant
+     */
+    preview(): object
 
     /**
      * Convert attachment to plain object to be persisted inside
@@ -149,6 +187,8 @@ declare module '@ioc:Adonis/Addons/AttachmentLite' {
     fromDbResponse(response: string): AttachmentContract
     getDrive(): DriveManagerContract
     setDrive(drive: DriveManagerContract): void
+    getConfig(): object
+    setConfig(config: object): void
   }
 
   export const attachment: AttachmentDecorator
