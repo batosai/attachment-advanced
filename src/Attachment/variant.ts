@@ -2,10 +2,13 @@ import type { MultipartFileContract } from '@ioc:Adonis/Core/BodyParser'
 import { cuid } from '@poppinss/utils/build/helpers'
 import { VariantContract, VariantAttributes } from '../../adonis-typings/variant'
 import sharp from 'sharp'
+import FileType from 'file-type'
 
 export class Variant implements VariantContract {
   public name: string
   public format: string
+  public extname?: string
+  public mimeType?: string
   public size: string
   public width: string
   public height: string
@@ -32,6 +35,7 @@ export class Variant implements VariantContract {
       .toBuffer()
 
     const metadata = await sharp(buffer, { failOnError: false }).metadata()
+    const type = await FileType.fromBuffer(buffer)
     this.format = metadata.format
     this.size = metadata.size
     this.width = metadata.width
@@ -39,6 +43,8 @@ export class Variant implements VariantContract {
     this.isProgressive = metadata.isProgressive
     this.hasAlpha = metadata.hasAlpha
     this.orientation = metadata.orientation
+    this.extname = type?.ext
+    this.mimeType = type?.mime
 
     this.name = this.generateName(config.folder)
 
@@ -55,11 +61,12 @@ export class Variant implements VariantContract {
       isProgressive: this.isProgressive,
       hasAlpha: this.hasAlpha,
       orientation: this.orientation,
-      // mimeType: this.mimeType,
+      extname: this.extname,
+      mimeType: this.mimeType,
     }
   }
 
   private generateName(folder = null): string {
-    return `${folder ? `${folder}/` : ''}${cuid()}.${this.format}`
+    return `${folder ? `${folder}/` : ''}${cuid()}.${this.extname}`
   }
 }

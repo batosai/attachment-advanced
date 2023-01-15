@@ -1,6 +1,8 @@
 export interface VariantContract {
   name: string
   format: string
+  extname?: string
+  mimeType?: string
   size: string
   width: string
   height: string
@@ -16,6 +18,8 @@ export interface VariantContract {
 export type VariantAttributes = {
   name: string
   format: string
+  extname?: string
+  mimeType?: string
   size: string
   width: string
   height: string

@@ -84,6 +84,7 @@
   "homepage": "https://github.com/adonisjs/attachment-lite#readme",
   "dependencies": {
     "@poppinss/utils": "^4.0.4",
+    "file-type": "^16.5.4",
     "sharp": "^0.31.3"
   },
   "adonisjs": {
