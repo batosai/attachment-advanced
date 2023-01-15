@@ -1,6 +1,6 @@
 {
-  "name": "@adonisjs/attachment-lite",
-  "version": "1.0.7",
+  "name": "@jrmc/attachment-advanced",
+  "version": "0.0.1",
   "description": "Turn any field on your Lucid model to an attachment data type",
   "main": "build/providers/AttachmentAdvancedProvider.js",
   "files": [
@@ -11,7 +11,6 @@
   "typings": "./build/adonis-typings/index.d.ts",
   "scripts": {
     "mrm": "mrm --preset=@adonisjs/mrm-preset",
-    "pretest": "npm run lint",
     "test": "node -r @adonisjs/require-ts/build/register bin/test.ts",
     "clean": "del build",
     "compile": "npm run lint && npm run clean && tsc",
@@ -22,15 +21,23 @@
     "commit": "git-cz",
     "release": "np --message=\"chore(release): %s\"",
     "version": "npm run build",
-    "sync-labels": "github-label-sync --labels ./node_modules/@adonisjs/mrm-preset/gh-labels.json adonisjs/attachment-lite"
+    "sync-labels": "github-label-sync --labels ./node_modules/@adonisjs/mrm-preset/gh-labels.json adonisjs/attachment-advanced"
   },
   "keywords": [
     "adonisjs",
     "lucid",
     "attachment",
-    "attachment-lite"
+    "attachment-advanced",
+    "image-attachment",
+    "image-manipulation",
+    "responsive-images",
+    "responsive-image",
+    "resize-images",
+    "optimize-images",
+    "image",
+    "sharp"
   ],
-  "author": "virk,adonisjs",
+  "author": "jeremy,batosai",
   "license": "MIT",
   "devDependencies": {
     "@adonisjs/core": "^5.8.2",
@@ -76,21 +83,21 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/adonisjs/attachment-lite.git"
+    "url": "git+https://github.com/batosai/attachment-advanced.git"
   },
   "bugs": {
-    "url": "https://github.com/adonisjs/attachment-lite/issues"
+    "url": "https://github.com/batosai/attachment-advanced/issues"
   },
-  "homepage": "https://github.com/adonisjs/attachment-lite#readme",
+  "homepage": "https://github.com/batosai/attachment-advanced#readme",
   "dependencies": {
     "@poppinss/utils": "^4.0.4",
     "file-type": "^16.5.4",
     "sharp": "^0.31.3"
   },
   "adonisjs": {
-    "types": "@adonisjs/attachment-lite",
+    "types": "@jrmc/attachment-advanced",
     "providers": [
-      "@adonisjs/attachment-lite"
+      "@adonisjs/attachment-advanced"
     ]
   },
   "publishConfig": {
