@@ -213,9 +213,23 @@ export class Attachment implements AttachmentContract {
   }
 
   /**
+   * Check attachment is image
+   */
+  private isImage() {
+    if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif', 'tiff'].includes(this.extname)) {
+      return true
+    }
+    return false
+  }
+
+  /**
    * Generate variants
    */
   private async generateVariants() {
+    if (this.isImage() === false) {
+      return
+    }
+
     const variants = this.getOptionVariants()
 
     for (const key in variants) {
