@@ -30,6 +30,7 @@ test.group('@attachment | insert', (group) => {
 
     app.container.resolveBinding('Adonis/Core/Route').commit()
     Attachment.setDrive(app.container.resolveBinding('Adonis/Core/Drive'))
+    Attachment.setConfig(app.container.resolveBinding('Adonis/Core/Config').get('attachment', {}))
   })
 
   group.each.teardown(async () => {

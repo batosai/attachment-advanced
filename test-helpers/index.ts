@@ -106,6 +106,28 @@ export async function setupApplication(
     export default databaseConfig`
   )
 
+  await fs.add(
+    'config/attachment.ts',
+    `const attachmentConfig = {
+      preview: 'thumbnail',
+      variants: {
+        thumbnail: {
+          resize: 300,
+          format: 'jpg'
+        },
+        medium: {
+          resize: 500,
+          format: 'jpg'
+        },
+        large: {
+          resize: 1500,
+          format: 'jpg'
+        }
+      }
+    }
+    export default attachmentConfig`
+  )
+
   const app = new Application(fs.basePath, environment, {
     providers: ['@adonisjs/core', '@adonisjs/lucid'].concat(additionalProviders || []),
   })
