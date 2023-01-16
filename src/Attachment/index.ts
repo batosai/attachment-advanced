@@ -194,15 +194,13 @@ export class Attachment implements AttachmentContract {
   private getOptionVariants() {
     const { variants } = Attachment.getConfig()
     let versions = {}
-    console.log(this.options?.variants)
+
+    if (!variants || this.options?.variants === false) return versions
+
     if (this.options?.variants) {
-      this.options?.variants.forEach((v) => {
+      ;(this.options?.variants as Array<string>).forEach((v) => {
         versions[v] = variants[v]
       })
-    }
-
-    if (this.options?.variant) {
-      versions[this.options?.variant] = variants[this.options?.variant]
     }
 
     if (Object.keys(versions).length === 0) {
@@ -216,11 +214,45 @@ export class Attachment implements AttachmentContract {
    * Check attachment is image
    */
   private isImage() {
-    if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif', 'tiff'].includes(this.extname)) {
+    if (
+      ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/avif', 'image/tiff'].includes(
+        this.mimeType
+      )
+    ) {
       return true
     }
     return false
   }
+
+  // /**
+  //  * Check attachment is pdf
+  //  */
+  // private isPdf() {
+  //   if (['application/pdf'].includes(this.mimeType)) {
+  //     return true
+  //   }
+  //   return false
+  // }
+
+  // /**
+  //  * Check attachment is video
+  //  */
+  // private isVideo() {
+  //   if (['video/mp4', 'video/webm', 'video/quicktime', 'video/vnd.avi', 'video/mpeg', 'video/3gpp', 'video/ogg', 'video/x-flv'].includes(this.mimeType)) {
+  //     return true
+  //   }
+  //   return false
+  // }
+
+  // /**
+  //  * Check attachment is document
+  //  */
+  // private isDocument() {
+  //   if ([''].includes(this.mimeType)) {
+  //     return true
+  //   }
+  //   return false
+  // }
 
   /**
    * Generate variants
@@ -363,7 +395,7 @@ export class Attachment implements AttachmentContract {
    * Returns the URL for the file. Same as "Drive.getUrl()"
    */
   public getUrl(variantName?: string | null) {
-    if (variantName) {
+    if (variantName && this.variants[variantName]) {
       return this.getDisk().getUrl(this.variants[variantName].name)
     }
     return this.getDisk().getUrl(this.name)
@@ -376,8 +408,8 @@ export class Attachment implements AttachmentContract {
     variantName?: string | null,
     options?: ContentHeaders & { expiresIn?: string | number }
   ) {
-    if (variantName) {
-      return this.getDisk().getSignedUrl(this.variant(variantName).name, options)
+    if (variantName && this.variants[variantName]) {
+      return this.getDisk().getSignedUrl(this.variant(variantName)?.name, options)
     }
     return this.getDisk().getSignedUrl(this.name, options)
   }
@@ -387,7 +419,7 @@ export class Attachment implements AttachmentContract {
    */
   public getPreviewUrl() {
     const { preview } = Attachment.getConfig()
-    return this.getDisk().getUrl(this.variant(preview).name)
+    return this.getDisk().getUrl(this.variant(preview)?.name)
   }
 
   /**
@@ -395,7 +427,7 @@ export class Attachment implements AttachmentContract {
    */
   public getPreviewSignedUrl(options?: ContentHeaders & { expiresIn?: string | number }) {
     const { preview } = Attachment.getConfig()
-    return this.getDisk().getSignedUrl(this.variant(preview).name, options)
+    return this.getDisk().getSignedUrl(this.variant(preview)?.name, options)
   }
 
   /**
