@@ -85,6 +85,8 @@ test.group('@attachment | insert', (group) => {
     assert.deepEqual(users[0].avatar?.toJSON(), body.avatar)
 
     assert.isTrue(await Drive.exists(body.avatar.name))
+    assert.lengthOf(Object.keys(body.avatar.variants), 3)
+    assert.isTrue(await Drive.exists(body.avatar.variants.thumbnail.name))
   })
 
   test('cleanup attachments when save call fails', async ({ assert }) => {
@@ -200,6 +202,7 @@ test.group('@attachment | insert with transaction', (group) => {
     assert.deepEqual(users[0].avatar?.toJSON(), body.avatar)
 
     assert.isTrue(await Drive.exists(body.avatar.name))
+    assert.isTrue(await Drive.exists(body.avatar.variants.thumbnail.name))
   })
 
   test('cleanup attachments when save call fails', async ({ assert }) => {
@@ -363,7 +366,9 @@ test.group('@attachment | update', (group) => {
     assert.instanceOf(users[0].avatar, Attachment)
     assert.deepEqual(users[0].avatar?.toJSON(), secondResponse.avatar)
     assert.isFalse(await Drive.exists(firstResponse.avatar.name))
+    assert.isFalse(await Drive.exists(firstResponse.avatar.variants.thumbnail.name))
     assert.isTrue(await Drive.exists(secondResponse.avatar.name))
+    assert.isTrue(await Drive.exists(secondResponse.avatar.variants.thumbnail.name))
   })
 
   test('cleanup attachments when save call fails', async ({ assert }) => {
@@ -415,7 +420,9 @@ test.group('@attachment | update', (group) => {
     assert.instanceOf(users[0].avatar, Attachment)
     assert.deepEqual(users[0].avatar?.toJSON(), firstResponse.avatar)
     assert.isTrue(await Drive.exists(firstResponse.avatar.name))
+    assert.isTrue(await Drive.exists(firstResponse.avatar.variants.thumbnail.name))
     assert.isFalse(await Drive.exists(secondResponse.avatar.name))
+    assert.isFalse(await Drive.exists(secondResponse.avatar.variants.thumbnail.name))
   })
 })
 
@@ -484,7 +491,9 @@ test.group('@attachment | update with transaction', (group) => {
     assert.instanceOf(users[0].avatar, Attachment)
     assert.deepEqual(users[0].avatar?.toJSON(), secondResponse.avatar)
     assert.isFalse(await Drive.exists(firstResponse.avatar.name))
+    assert.isFalse(await Drive.exists(firstResponse.avatar.variants.thumbnail.name))
     assert.isTrue(await Drive.exists(secondResponse.avatar.name))
+    assert.isTrue(await Drive.exists(secondResponse.avatar.variants.thumbnail.name))
   })
 
   test('cleanup attachments when save call fails', async ({ assert }) => {
@@ -541,7 +550,9 @@ test.group('@attachment | update with transaction', (group) => {
     assert.instanceOf(users[0].avatar, Attachment)
     assert.deepEqual(users[0].avatar?.toJSON(), firstResponse.avatar)
     assert.isTrue(await Drive.exists(firstResponse.avatar.name))
+    assert.isTrue(await Drive.exists(firstResponse.avatar.variants.thumbnail.name))
     assert.isFalse(await Drive.exists(secondResponse.avatar.name))
+    assert.isFalse(await Drive.exists(secondResponse.avatar.variants.thumbnail.name))
   })
 
   test('cleanup attachments when rollback is called after success', async ({ assert }) => {
@@ -596,7 +607,9 @@ test.group('@attachment | update with transaction', (group) => {
     assert.instanceOf(users[0].avatar, Attachment)
     assert.deepEqual(users[0].avatar?.toJSON(), firstResponse.avatar)
     assert.isTrue(await Drive.exists(firstResponse.avatar.name))
+    assert.isTrue(await Drive.exists(firstResponse.avatar.variants.thumbnail.name))
     assert.isFalse(await Drive.exists(secondResponse.avatar.name))
+    assert.isFalse(await Drive.exists(secondResponse.avatar.variants.thumbnail.name))
   })
 })
 
@@ -659,6 +672,7 @@ test.group('@attachment | resetToNull', (group) => {
     assert.lengthOf(users, 1)
     assert.isNull(users[0].avatar)
     assert.isFalse(await Drive.exists(firstResponse.avatar.name))
+    assert.isFalse(await Drive.exists(firstResponse.avatar.variants.thumbnail.name))
   })
 
   test('do not remove old file when resetting to null fails', async ({ assert }) => {
@@ -708,6 +722,7 @@ test.group('@attachment | resetToNull', (group) => {
     assert.instanceOf(users[0].avatar, Attachment)
     assert.deepEqual(users[0].avatar?.toJSON(), firstResponse.avatar)
     assert.isTrue(await Drive.exists(firstResponse.avatar.name))
+    assert.isTrue(await Drive.exists(firstResponse.avatar.variants.thumbnail.name))
   })
 })
 
@@ -773,6 +788,7 @@ test.group('@attachment | resetToNull with transaction', (group) => {
     assert.lengthOf(users, 1)
     assert.isNull(users[0].avatar)
     assert.isFalse(await Drive.exists(firstResponse.avatar.name))
+    assert.isFalse(await Drive.exists(firstResponse.avatar.variants.thumbnail.name))
   })
 
   test('do not remove old file when resetting to null fails', async ({ assert }) => {
@@ -827,6 +843,7 @@ test.group('@attachment | resetToNull with transaction', (group) => {
     assert.instanceOf(users[0].avatar, Attachment)
     assert.deepEqual(users[0].avatar?.toJSON(), firstResponse.avatar)
     assert.isTrue(await Drive.exists(firstResponse.avatar.name))
+    assert.isTrue(await Drive.exists(firstResponse.avatar.variants.thumbnail.name))
   })
 
   test('do not remove old file when rollback was performed after success', async ({ assert }) => {
@@ -877,6 +894,7 @@ test.group('@attachment | resetToNull with transaction', (group) => {
     assert.instanceOf(users[0].avatar, Attachment)
     assert.deepEqual(users[0].avatar?.toJSON(), firstResponse.avatar)
     assert.isTrue(await Drive.exists(firstResponse.avatar.name))
+    assert.isTrue(await Drive.exists(firstResponse.avatar.variants.thumbnail.name))
   })
 })
 
@@ -938,6 +956,7 @@ test.group('@attachment | delete', (group) => {
     const users = await User.all()
     assert.lengthOf(users, 0)
     assert.isFalse(await Drive.exists(firstResponse.avatar.name))
+    assert.isFalse(await Drive.exists(firstResponse.avatar.variants.thumbnail.name))
   })
 
   test('do not delete attachment when deletion fails', async ({ assert }) => {
@@ -988,6 +1007,7 @@ test.group('@attachment | delete', (group) => {
     assert.lengthOf(users, 1)
     assert.deepEqual(users[0].avatar?.toJSON(), body.avatar)
     assert.isTrue(await Drive.exists(body.avatar.name))
+    assert.isTrue(await Drive.exists(body.avatar.variants.thumbnail.name))
   })
 })
 
@@ -1054,6 +1074,7 @@ test.group('@attachment | delete with transaction', (group) => {
     const users = await User.all()
     assert.lengthOf(users, 0)
     assert.isFalse(await Drive.exists(firstResponse.avatar.name))
+    assert.isFalse(await Drive.exists(firstResponse.avatar.variants.thumbnail.name))
   })
 
   test('do not delete attachment when deletion fails', async ({ assert }) => {
@@ -1110,6 +1131,7 @@ test.group('@attachment | delete with transaction', (group) => {
     assert.lengthOf(users, 1)
     assert.deepEqual(users[0].avatar?.toJSON(), body.avatar)
     assert.isTrue(await Drive.exists(body.avatar.name))
+    assert.isTrue(await Drive.exists(body.avatar.variants.thumbnail.name))
   })
 })
 
@@ -1170,8 +1192,10 @@ test.group('@attachment | find', (group) => {
     assert.instanceOf(user.avatar, Attachment)
     assert.isDefined(user.avatar?.url)
     assert.isDefined(body.avatar.url)
+    assert.isDefined(body.avatar.variants.thumbnail.url)
 
     assert.isTrue(await Drive.exists(body.avatar.name))
+    assert.isTrue(await Drive.exists(body.avatar.variants.thumbnail.name))
   })
 
   test('Attachment response should be null when column value is null', async ({ assert }) => {
@@ -1252,8 +1276,10 @@ test.group('@attachment | find', (group) => {
     assert.instanceOf(user.avatar, Attachment)
     assert.isUndefined(user.avatar?.url)
     assert.isUndefined(body.avatar.url)
+    assert.isUndefined(body.avatar.variants.thumbnail.url)
 
     assert.isTrue(await Drive.exists(body.avatar.name))
+    assert.isTrue(await Drive.exists(body.avatar.variants.thumbnail.name))
   })
 })
 
@@ -1314,8 +1340,10 @@ test.group('@attachment | fetch', (group) => {
     assert.instanceOf(users[0].avatar, Attachment)
     assert.isDefined(users[0].avatar?.url)
     assert.isDefined(body.avatar.url)
+    assert.isDefined(body.avatar.variants.thumbnail.url)
 
     assert.isTrue(await Drive.exists(body.avatar.name))
+    assert.isTrue(await Drive.exists(body.avatar.variants.thumbnail.name))
   })
 
   test('Attachment response should be null when column value is null', async ({ assert }) => {
@@ -1395,8 +1423,10 @@ test.group('@attachment | fetch', (group) => {
     assert.instanceOf(users[0].avatar, Attachment)
     assert.isUndefined(users[0].avatar?.url)
     assert.isUndefined(body.avatar.url)
+    assert.isUndefined(body.avatar.variants.thumbnail.url)
 
     assert.isTrue(await Drive.exists(body.avatar.name))
+    assert.isTrue(await Drive.exists(body.avatar.variants.thumbnail.name))
   })
 })
 
@@ -1457,8 +1487,10 @@ test.group('@attachment | paginate', (group) => {
     assert.instanceOf(users[0].avatar, Attachment)
     assert.isDefined(users[0].avatar?.url)
     assert.isDefined(body.avatar.url)
+    assert.isDefined(body.avatar.variants.thumbnail.url)
 
     assert.isTrue(await Drive.exists(body.avatar.name))
+    assert.isTrue(await Drive.exists(body.avatar.variants.thumbnail.name))
   })
 
   test('Attachment response should be null when column value is null', async ({ assert }) => {
@@ -1537,7 +1569,9 @@ test.group('@attachment | paginate', (group) => {
     assert.instanceOf(users[0].avatar, Attachment)
     assert.isUndefined(users[0].avatar?.url)
     assert.isUndefined(body.avatar.url)
+    assert.isUndefined(body.avatar.variants.thumbnail.url)
 
     assert.isTrue(await Drive.exists(body.avatar.name))
+    assert.isTrue(await Drive.exists(body.avatar.variants.thumbnail.name))
   })
 })
