@@ -11,6 +11,7 @@ import os from 'node:os'
 import path from 'node:path'
 import { cuid } from '@poppinss/utils/build/helpers'
 import { Poppler } from 'node-poppler'
+import ffmpeg from 'fluent-ffmpeg'
 import { Attachment } from '.'
 
 export const pdfToImage = async (pdfPath) => {
@@ -25,6 +26,22 @@ export const pdfToImage = async (pdfPath) => {
   const filePath = path.join(os.tmpdir(), cuid())
   await poppler.pdfToCairo(pdfPath, filePath, options)
   return filePath + '-1.jpg'
+}
+
+export const videoToImage = async (videoPath) => {
+  return new Promise<string>((resolve) => {
+    const folder = os.tmpdir()
+    const filename = `${cuid()}.png`
+    ffmpeg(videoPath)
+      .screenshots({
+        count: 1,
+        filename,
+        folder,
+      })
+      .on('end', () => {
+        resolve(path.join(folder, filename))
+      })
+  })
 }
 
 export const isImage = (mimeType) => {

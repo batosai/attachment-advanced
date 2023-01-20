@@ -22,7 +22,7 @@ import type {
   AttachmentConstructorContract,
 } from '@ioc:Adonis/Addons/AttachmentAdvanced'
 import { Variant } from './variant'
-import { pdfToImage, isImage, isPdf } from './helpers'
+import { pdfToImage, videoToImage, isImage, isPdf, isVideo } from './helpers'
 
 const REQUIRED_ATTRIBUTES = ['name', 'size', 'extname', 'mimeType']
 
@@ -194,7 +194,7 @@ export class Attachment implements AttachmentContract {
    * Generate variants
    */
   private getVariantsConfig() {
-    const { image = {}, pdf = {} } = Attachment.getConfig()
+    const { image = {}, pdf = {}, video = {} } = Attachment.getConfig()
     let variants: object = {}
     let versions: object = {}
 
@@ -202,6 +202,8 @@ export class Attachment implements AttachmentContract {
       variants = image?.variants
     } else if (isPdf(this.mimeType) === true) {
       variants = pdf?.previews
+    } else if (isVideo(this.mimeType) === true) {
+      variants = video?.previews
     }
 
     if (!variants || this.options?.variants === false) return false
@@ -232,6 +234,10 @@ export class Attachment implements AttachmentContract {
       filePath = await pdfToImage(this.file!.filePath as string)
     }
 
+    if (variantsConfig && isVideo(this.mimeType) === true) {
+      filePath = await videoToImage(this.file!.filePath as string)
+    }
+
     for (const key in variantsConfig) {
       const variant = new Variant(filePath)
       const buffer = await variant.generate({
@@ -245,7 +251,7 @@ export class Attachment implements AttachmentContract {
     }
 
     // Delete tmp file
-    if (filePath && isPdf(this.mimeType) === true) {
+    if (filePath && (isPdf(this.mimeType) === true || isVideo(this.mimeType) === true)) {
       fs.unlink(filePath, () => {})
     }
   }
