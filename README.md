@@ -39,13 +39,13 @@ Also, it relies on [AdonisJS drive](https://docs.adonisjs.com/guides/drive) for 
 Install the package from the npm registry as follows.
 
 ```sh
-npm i @adonisjs/attachment-lite
+npm i @jrmc/attachment-advanced
 ```
 
 Next, configure the package by running the following ace command.
 
 ```sh
-node ace configure @adonisjs/attachment-lite
+node ace configure @jrmc/attachment-advanced
 ```
 
 ## Usage
@@ -335,10 +335,10 @@ export default Factory.define(Post, async ({ faker }) => {
 [github-actions-image]: https://img.shields.io/github/workflow/status/adonisjs/attachment-lite/test?style=for-the-badge
 [github-actions-url]: https://github.com/adonisjs/attachment-lite/actions/workflows/test.yml "github-actions"
 
-[npm-image]: https://img.shields.io/npm/v/@adonisjs/attachment-lite.svg?style=for-the-badge&logo=npm
-[npm-url]: https://npmjs.org/package/@adonisjs/attachment-lite "npm"
+[npm-image]: https://img.shields.io/npm/v/@jrmc/attachment-advanced.svg?style=for-the-badge&logo=npm
+[npm-url]: https://npmjs.org/package/@jrmc/attachment-advanced "npm"
 
-[license-image]: https://img.shields.io/npm/l/@adonisjs/attachment-lite?color=blueviolet&style=for-the-badge
+[license-image]: https://img.shields.io/npm/l/@jrmc/attachment-advanced?color=blueviolet&style=for-the-badge
 [license-url]: LICENSE.md "license"
 
 [typescript-image]: https://img.shields.io/badge/Typescript-294E80.svg?style=for-the-badge&logo=typescript

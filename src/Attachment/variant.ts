@@ -1,4 +1,12 @@
-import type { MultipartFileContract } from '@ioc:Adonis/Core/BodyParser'
+/*
+ * @jrmc/attachment-advanced
+ *
+ * (c) Chaufourier Jeremy <jeremy@chaufourier.fr>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 import { cuid } from '@poppinss/utils/build/helpers'
 import { VariantContract, VariantAttributes } from '../../adonis-typings/variant'
 import sharp from 'sharp'
@@ -17,7 +25,7 @@ export class Variant implements VariantContract {
   public orientation: number
   public url: string
 
-  constructor(private file?: MultipartFileContract) {}
+  constructor(private file?: string | Buffer) {}
 
   public async generate(config) {
     let format = config.format ? config.format : 'jpg'
@@ -28,7 +36,7 @@ export class Variant implements VariantContract {
       formatoptions = config.format
     }
 
-    const buffer = await sharp(this.file!.filePath, { failOnError: false })
+    const buffer = await sharp(this.file, { failOnError: false })
       .withMetadata()
       .resize(config.resize!)
       .toFormat(format, formatoptions)

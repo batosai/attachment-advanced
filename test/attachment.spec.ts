@@ -1,7 +1,7 @@
 /*
- * @adonisjs/attachment-lite
+ * @jrmc/attachment-advanced
  *
- * (c) Harminder Virk <virk@adonisjs.com>
+ * (c) Chaufourier Jeremy <jeremy@chaufourier.fr>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.

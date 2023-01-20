@@ -1,7 +1,7 @@
 /*
- * @adonisjs/attachment-lite
+ * @jrmc/attachment-advanced
  *
- * (c) Harminder Virk <virk@adonisjs.com>
+ * (c) Chaufourier Jeremy <jeremy@chaufourier.fr>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -47,8 +47,10 @@ declare module '@ioc:Adonis/Addons/AttachmentAdvanced' {
    */
   export type AttachmentConfig = {
     options?: object
-    preview: string
-    variants: object
+    pdf?: any
+    image?: any
+    video?: any
+    document?: any
   }
 
   /**
@@ -139,12 +141,12 @@ declare module '@ioc:Adonis/Addons/AttachmentAdvanced' {
     /**
      * Returns the URL for the preview file. Same as "Drive.getUrl()"
      */
-    getPreviewUrl(): Promise<string>
+    // getPreviewUrl(): Promise<string>
 
     /**
      * Returns the signed URL for the preview file. Same as "Drive.getSignedUrl()"
      */
-    getPreviewSignedUrl(options?: ContentHeaders & { expiresIn?: string | number }): Promise<string>
+    // getPreviewSignedUrl(options?: ContentHeaders & { expiresIn?: string | number }): Promise<string>
 
     /**
      * Returns variant
@@ -152,9 +154,9 @@ declare module '@ioc:Adonis/Addons/AttachmentAdvanced' {
     variant(variantName: string): object
 
     /**
-     * Returns variant
+     * Returns variant (alias variant())
      */
-    preview(): object
+    preview(variantName: string): object
 
     /**
      * Convert attachment to plain object to be persisted inside

@@ -1,7 +1,7 @@
 /*
- * @adonisjs/attachment-lite
+ * @jrmc/attachment-advanced
  *
- * (c) Harminder Virk <virk@adonisjs.com>
+ * (c) Chaufourier Jeremy <jeremy@chaufourier.fr>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -9,6 +9,7 @@
 
 /// <reference path="../../adonis-typings/index.ts" />
 
+import fs from 'node:fs'
 import { Exception } from '@poppinss/utils'
 import { cuid } from '@poppinss/utils/build/helpers'
 import type { MultipartFileContract } from '@ioc:Adonis/Core/BodyParser'
@@ -21,6 +22,7 @@ import type {
   AttachmentConstructorContract,
 } from '@ioc:Adonis/Addons/AttachmentAdvanced'
 import { Variant } from './variant'
+import { pdfToImage, isImage, isPdf } from './helpers'
 
 const REQUIRED_ATTRIBUTES = ['name', 'size', 'extname', 'mimeType']
 
@@ -33,7 +35,7 @@ export class Attachment implements AttachmentContract {
   private static attachmentConfig: AttachmentConfig
 
   /**
-   * Refrence to the drive
+   * Reference to the drive
    */
   public static getDrive() {
     return this.drive
@@ -47,7 +49,7 @@ export class Attachment implements AttachmentContract {
   }
 
   /**
-   * Refrence to the config
+   * Reference to the config
    */
   public static getConfig() {
     return this.attachmentConfig
@@ -191,11 +193,18 @@ export class Attachment implements AttachmentContract {
   /**
    * Generate variants
    */
-  private getOptionVariants() {
-    const { variants } = Attachment.getConfig()
-    let versions = {}
+  private getVariantsConfig() {
+    const { image = {}, pdf = {} } = Attachment.getConfig()
+    let variants: object = {}
+    let versions: object = {}
 
-    if (!variants || this.options?.variants === false) return versions
+    if (isImage(this.mimeType) === true) {
+      variants = image?.variants
+    } else if (isPdf(this.mimeType) === true) {
+      variants = pdf?.previews
+    }
+
+    if (!variants || this.options?.variants === false) return false
 
     if (this.options?.variants) {
       ;(this.options?.variants as Array<string>).forEach((v) => {
@@ -211,69 +220,33 @@ export class Attachment implements AttachmentContract {
   }
 
   /**
-   * Check attachment is image
-   */
-  private isImage() {
-    if (
-      ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/avif', 'image/tiff'].includes(
-        this.mimeType
-      )
-    ) {
-      return true
-    }
-    return false
-  }
-
-  // /**
-  //  * Check attachment is pdf
-  //  */
-  // private isPdf() {
-  //   if (['application/pdf'].includes(this.mimeType)) {
-  //     return true
-  //   }
-  //   return false
-  // }
-
-  // /**
-  //  * Check attachment is video
-  //  */
-  // private isVideo() {
-  //   if (['video/mp4', 'video/webm', 'video/quicktime', 'video/vnd.avi', 'video/mpeg', 'video/3gpp', 'video/ogg', 'video/x-flv'].includes(this.mimeType)) {
-  //     return true
-  //   }
-  //   return false
-  // }
-
-  // /**
-  //  * Check attachment is document
-  //  */
-  // private isDocument() {
-  //   if ([''].includes(this.mimeType)) {
-  //     return true
-  //   }
-  //   return false
-  // }
-
-  /**
    * Generate variants
    */
   private async generateVariants() {
-    if (this.isImage() === false) {
-      return
+    const variantsConfig = this.getVariantsConfig()
+    let filePath: string | undefined | Buffer = this.file?.filePath
+
+    if (variantsConfig === false) return
+
+    if (variantsConfig && isPdf(this.mimeType) === true) {
+      filePath = await pdfToImage(this.file!.filePath as string)
     }
 
-    const variants = this.getOptionVariants()
-
-    for (const key in variants) {
-      const variant = new Variant(this.file)
+    for (const key in variantsConfig) {
+      const variant = new Variant(filePath)
       const buffer = await variant.generate({
-        ...variants[key],
+        ...variantsConfig[key],
         folder: this.options?.folder,
       })
 
       await this.getDisk().put(variant.name, buffer!)
 
       this.variants[key] = variant.toObject()
+    }
+
+    // Delete tmp file
+    if (filePath && isPdf(this.mimeType) === true) {
+      fs.unlink(filePath, () => {})
     }
   }
 
@@ -415,34 +388,17 @@ export class Attachment implements AttachmentContract {
   }
 
   /**
-   * Returns the URL for the file. Same as "Drive.getUrl()"
-   */
-  public getPreviewUrl() {
-    const { preview } = Attachment.getConfig()
-    return this.getDisk().getUrl(this.variant(preview)?.name)
-  }
-
-  /**
-   * Returns the signed URL for the file. Same as "Drive.getSignedUrl()"
-   */
-  public getPreviewSignedUrl(options?: ContentHeaders & { expiresIn?: string | number }) {
-    const { preview } = Attachment.getConfig()
-    return this.getDisk().getSignedUrl(this.variant(preview)?.name, options)
-  }
-
-  /**
    * Returns variant by name
    */
   public variant(variantName: string) {
     return this.variants[variantName]
   }
 
-  /**
-   * Returns preview
-   */
-  public preview() {
-    const { preview } = Attachment.getConfig()
-    return this.variant(preview)
+  // /**
+  //  * Returns preview (alias variant())
+  //  */
+  public preview(variantName: string) {
+    return this.variants[variantName]
   }
 
   /**
