@@ -17,7 +17,8 @@ import { Attachment } from '.'
 
 export const pdfToImage = async (pdfPath) => {
   const { pdf } = Attachment.getConfig()
-  const poppler = new Poppler(pdf?.bin)
+  const bin = pdf?.bin ?? '/usr/bin'
+  const poppler = new Poppler(bin)
   const options = {
     firstPageToConvert: 1,
     lastPageToConvert: 1,
@@ -46,17 +47,15 @@ export const videoToImage = async (videoPath) => {
 }
 
 export const documentToImage = async (documentPath) => {
-  return new Promise<string>(async (resolve) => {
-    const type = 'jpg'
-    const outdir = os.tmpdir()
-    const filename = path.basename(documentPath.replace(path.extname(documentPath), `.${type}`))
-    await convert(documentPath, {
-      // output: filename,
-      outdir: os.tmpdir(),
-      type,
-    })
-    resolve(path.join(outdir, filename))
+  const type = 'jpg'
+  const outdir = os.tmpdir()
+  const filename = path.basename(documentPath.replace(path.extname(documentPath), `.${type}`))
+  await convert(documentPath, {
+    // output: filename,
+    outdir: os.tmpdir(),
+    type,
   })
+  return path.join(outdir, filename)
 }
 
 export const isImage = (mimeType) => {
