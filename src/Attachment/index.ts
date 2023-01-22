@@ -209,7 +209,7 @@ export class Attachment implements AttachmentContract {
     if (isImage(this.mimeType) === true) {
       variants = image?.variants
     } else if (isPdf(this.mimeType) === true) {
-      variants = pdf?.previews
+      variants = pdf?.previews || document?.previews
     } else if (isDocument(this.mimeType) === true) {
       variants = document?.previews
     } else if (isVideo(this.mimeType) === true) {
@@ -240,7 +240,7 @@ export class Attachment implements AttachmentContract {
 
     if (variantsConfig === false) return
 
-    if (variantsConfig && isPdf(this.mimeType) === true) {
+    if (variantsConfig && isPdf(this.mimeType) === true && Attachment.getConfig().pdf) {
       filePath = await pdfToImage(this.file!.filePath as string)
     } else if (variantsConfig && isDocument(this.mimeType) === true) {
       filePath = await documentToImage(this.file!.filePath as string)
