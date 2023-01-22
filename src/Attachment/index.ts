@@ -22,7 +22,15 @@ import type {
   AttachmentConstructorContract,
 } from '@ioc:Adonis/Addons/AttachmentAdvanced'
 import { Variant } from './variant'
-import { pdfToImage, videoToImage, isImage, isPdf, isVideo } from './helpers'
+import {
+  pdfToImage,
+  videoToImage,
+  documentToImage,
+  isImage,
+  isPdf,
+  isDocument,
+  isVideo,
+} from './helpers'
 
 const REQUIRED_ATTRIBUTES = ['name', 'size', 'extname', 'mimeType']
 
@@ -194,7 +202,7 @@ export class Attachment implements AttachmentContract {
    * Generate variants
    */
   private getVariantsConfig() {
-    const { image = {}, pdf = {}, video = {} } = Attachment.getConfig()
+    const { image = {}, pdf = {}, video = {}, document = {} } = Attachment.getConfig()
     let variants: object = {}
     let versions: object = {}
 
@@ -202,6 +210,8 @@ export class Attachment implements AttachmentContract {
       variants = image?.variants
     } else if (isPdf(this.mimeType) === true) {
       variants = pdf?.previews
+    } else if (isDocument(this.mimeType) === true) {
+      variants = document?.previews
     } else if (isVideo(this.mimeType) === true) {
       variants = video?.previews
     }
@@ -232,9 +242,10 @@ export class Attachment implements AttachmentContract {
 
     if (variantsConfig && isPdf(this.mimeType) === true) {
       filePath = await pdfToImage(this.file!.filePath as string)
-    }
-
-    if (variantsConfig && isVideo(this.mimeType) === true) {
+    } else if (variantsConfig && isDocument(this.mimeType) === true) {
+      filePath = await documentToImage(this.file!.filePath as string)
+      console.log(filePath)
+    } else if (variantsConfig && isVideo(this.mimeType) === true) {
       filePath = await videoToImage(this.file!.filePath as string)
     }
 
@@ -251,7 +262,7 @@ export class Attachment implements AttachmentContract {
     }
 
     // Delete tmp file
-    if (filePath && (isPdf(this.mimeType) === true || isVideo(this.mimeType) === true)) {
+    if (filePath && (isPdf(this.mimeType) || isVideo(this.mimeType) || isDocument(this.mimeType))) {
       fs.unlink(filePath, () => {})
     }
   }

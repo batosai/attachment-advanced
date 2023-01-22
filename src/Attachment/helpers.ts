@@ -12,6 +12,7 @@ import path from 'node:path'
 import { cuid } from '@poppinss/utils/build/helpers'
 import { Poppler } from 'node-poppler'
 import ffmpeg from 'fluent-ffmpeg'
+import convert from 'node-convert'
 import { Attachment } from '.'
 
 export const pdfToImage = async (pdfPath) => {
@@ -41,6 +42,20 @@ export const videoToImage = async (videoPath) => {
       .on('end', () => {
         resolve(path.join(folder, filename))
       })
+  })
+}
+
+export const documentToImage = async (documentPath) => {
+  return new Promise<string>(async (resolve) => {
+    const type = 'jpg'
+    const outdir = os.tmpdir()
+    const filename = path.basename(documentPath.replace(path.extname(documentPath), `.${type}`))
+    await convert(documentPath, {
+      // output: filename,
+      outdir: os.tmpdir(),
+      type,
+    })
+    resolve(path.join(outdir, filename))
   })
 }
 
@@ -81,7 +96,16 @@ export const isVideo = (mimeType) => {
 }
 
 export const isDocument = (mimeType) => {
-  if ([''].includes(mimeType)) {
+  if (
+    [
+      'application/pdf',
+      'application/vnd.oasis.opendocument.text', // odt
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // docx
+      'application/msword', // doc
+      'application/rtf',
+      'text/plain',
+    ].includes(mimeType)
+  ) {
     return true
   }
   return false

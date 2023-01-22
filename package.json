@@ -93,6 +93,7 @@
     "@poppinss/utils": "^4.0.4",
     "file-type": "^16.5.4",
     "fluent-ffmpeg": "^2.1.2",
+    "node-convert": "^0.1.1",
     "node-poppler": "^6.1.1",
     "sharp": "^0.31.3"
   },
