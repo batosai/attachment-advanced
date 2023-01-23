@@ -87,6 +87,7 @@ export const isVideo = (mimeType) => {
       'video/3gpp',
       'video/ogg',
       'video/x-flv',
+      'video/x-matroska', // mkv
     ].includes(mimeType)
   ) {
     return true
