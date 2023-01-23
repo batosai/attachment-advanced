@@ -244,7 +244,6 @@ export class Attachment implements AttachmentContract {
       filePath = await pdfToImage(this.file!.filePath as string)
     } else if (variantsConfig && isDocument(this.mimeType) === true) {
       filePath = await documentToImage(this.file!.filePath as string)
-      console.log(filePath)
     } else if (variantsConfig && isVideo(this.mimeType) === true) {
       filePath = await videoToImage(this.file!.filePath as string)
     }

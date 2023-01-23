@@ -151,10 +151,11 @@ test.group('Attachment | fromFile', (group) => {
 
     const { body } = await supertest(server)
       .post('/')
-      .attach('avatar', join(__dirname, '../cat.jpeg'))
+      .attach('avatar', join(__dirname, '../documents/cat.jpeg'))
 
     const Drive = app.container.resolveBinding('Adonis/Core/Drive')
     assert.isTrue(await Drive.exists(body.name))
+    assert.isTrue(await Drive.exists(body.variants.thumbnail.name))
   })
 
   test('store attachment inside a nested folder', async ({ assert }) => {
@@ -176,7 +177,7 @@ test.group('Attachment | fromFile', (group) => {
 
     const { body } = await supertest(server)
       .post('/')
-      .attach('avatar', join(__dirname, '../cat.jpeg'))
+      .attach('avatar', join(__dirname, '../documents/cat.jpeg'))
 
     const Drive = app.container.resolveBinding('Adonis/Core/Drive')
     assert.isTrue(body.name.startsWith('users/avatars'))
@@ -203,7 +204,7 @@ test.group('Attachment | fromFile', (group) => {
 
     const { body } = await supertest(server)
       .post('/')
-      .attach('avatar', join(__dirname, '../cat.jpeg'))
+      .attach('avatar', join(__dirname, '../documents/cat.jpeg'))
 
     assert.isDefined(body.url)
   })
@@ -230,8 +231,83 @@ test.group('Attachment | fromFile', (group) => {
 
     const { body } = await supertest(server)
       .post('/')
-      .attach('avatar', join(__dirname, '../cat.jpeg'))
+      .attach('avatar', join(__dirname, '../documents/cat.jpeg'))
 
     assert.isDefined(body.url)
+  })
+
+  test('create attachment from the user uploaded file with pdf file', async ({ assert }) => {
+    const server = createServer((req, res) => {
+      const ctx = app.container.resolveBinding('Adonis/Core/HttpContext').create('/', {}, req, res)
+      app.container.make(BodyParserMiddleware).handle(ctx, async () => {
+        const file = ctx.request.file('avatar')!
+        const attachment = Attachment.fromFile(file)
+        await attachment.save()
+
+        assert.isTrue(attachment.isPersisted)
+        assert.isTrue(attachment.isLocal)
+
+        ctx.response.send(attachment)
+        ctx.response.finish()
+      })
+    })
+
+    const { body } = await supertest(server)
+      .post('/')
+      .attach('avatar', join(__dirname, '../documents/doc.pdf'))
+
+    const Drive = app.container.resolveBinding('Adonis/Core/Drive')
+    assert.isTrue(await Drive.exists(body.name))
+    assert.isTrue(await Drive.exists(body.variants.thumbnail.name))
+  })
+
+  test('create attachment from the user uploaded file with odt file', async ({ assert }) => {
+    const server = createServer((req, res) => {
+      const ctx = app.container.resolveBinding('Adonis/Core/HttpContext').create('/', {}, req, res)
+      app.container.make(BodyParserMiddleware).handle(ctx, async () => {
+        const file = ctx.request.file('avatar')!
+        const attachment = Attachment.fromFile(file)
+        await attachment.save()
+
+        assert.isTrue(attachment.isPersisted)
+        assert.isTrue(attachment.isLocal)
+
+        ctx.response.send(attachment)
+        ctx.response.finish()
+      })
+    })
+
+    const { body } = await supertest(server)
+      .post('/')
+      .attach('avatar', join(__dirname, '../documents/doc.odt'))
+
+    const Drive = app.container.resolveBinding('Adonis/Core/Drive')
+    assert.isTrue(await Drive.exists(body.name))
+    assert.isTrue(await Drive.exists(body.variants.thumbnail.name))
+  })
+
+  test('create attachment from the user uploaded file with mp4 file', async ({ assert }) => {
+    const server = createServer((req, res) => {
+      const ctx = app.container.resolveBinding('Adonis/Core/HttpContext').create('/', {}, req, res)
+      app.container.make(BodyParserMiddleware).handle(ctx, async () => {
+        const file = ctx.request.file('avatar')!
+        const attachment = Attachment.fromFile(file)
+        await attachment.save()
+
+        assert.isTrue(attachment.isPersisted)
+        assert.isTrue(attachment.isLocal)
+
+        ctx.response.send(attachment)
+        ctx.response.finish()
+      })
+    })
+
+    const { body } = await supertest(server)
+      .post('/')
+      .attach('avatar', join(__dirname, '../documents/small.mp4'))
+
+    const Drive = app.container.resolveBinding('Adonis/Core/Drive')
+    assert.isTrue(await Drive.exists(body.name))
+    assert.isTrue(await Drive.exists(body.variants.thumbnail.name))
   })
 })

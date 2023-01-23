@@ -101,6 +101,12 @@ export const isDocument = (mimeType) => {
       'application/vnd.oasis.opendocument.text', // odt
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // docx
       'application/msword', // doc
+      'application/vnd.apple.numbers',
+      'application/vnd.apple.pages',
+      'application/vnd.oasis.opendocument.spreadsheet', // ods
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // xlsx
+      'application/vnd.ms-excel', // xls
+      'text/csv',
       'application/rtf',
       'text/plain',
     ].includes(mimeType)

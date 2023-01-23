@@ -109,19 +109,52 @@ export async function setupApplication(
   await fs.add(
     'config/attachment.ts',
     `const attachmentConfig = {
-      preview: 'thumbnail',
-      variants: {
-        thumbnail: {
-          resize: 300,
-          format: 'jpg'
-        },
-        medium: {
-          resize: 500,
-          format: 'jpg'
-        },
-        large: {
-          resize: 1500,
-          format: 'jpg'
+      document: {
+        previews: {
+          thumbnail: {
+            resize: 300,
+            format: 'webp'
+          },
+        }
+      },
+      video: {
+        previews: {
+          thumbnail: {
+            resize: 1024,
+            format: 'jpg'
+          },
+        }
+      },
+      pdf: {
+        previews: {
+          thumbnail: {
+            resize: 300,
+            format: 'jpg'
+          },
+        }
+      },
+      image: {
+        variants: {
+          thumbnail: {
+            resize: 300,
+            format: 'jpg'
+          },
+          medium: {
+            resize: {
+              width: 500,
+              fit: 'contain',
+              position: 'right top',
+            },
+            format: {
+              format: 'jpg',
+              quality: 10,
+              progressive: true
+            }
+          },
+          large: {
+            resize: 1500,
+            format: 'jpg'
+          }
         }
       }
     }

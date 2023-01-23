@@ -75,7 +75,7 @@ test.group('@attachment | insert', (group) => {
 
     const { body } = await supertest(server)
       .post('/')
-      .attach('avatar', join(__dirname, '../cat.jpeg'))
+      .attach('avatar', join(__dirname, '../documents/cat.jpeg'))
 
     const users = await User.all()
 
@@ -128,7 +128,7 @@ test.group('@attachment | insert', (group) => {
 
     const { body } = await supertest(server)
       .post('/')
-      .attach('avatar', join(__dirname, '../cat.jpeg'))
+      .attach('avatar', join(__dirname, '../documents/cat.jpeg'))
 
     const users = await User.all()
 
@@ -193,7 +193,7 @@ test.group('@attachment | insert with transaction', (group) => {
 
     const { body } = await supertest(server)
       .post('/')
-      .attach('avatar', join(__dirname, '../cat.jpeg'))
+      .attach('avatar', join(__dirname, '../documents/cat.jpeg'))
 
     const users = await User.all()
 
@@ -249,7 +249,7 @@ test.group('@attachment | insert with transaction', (group) => {
 
     const { body } = await supertest(server)
       .post('/')
-      .attach('avatar', join(__dirname, '../cat.jpeg'))
+      .attach('avatar', join(__dirname, '../documents/cat.jpeg'))
 
     const users = await User.all()
 
@@ -295,12 +295,55 @@ test.group('@attachment | insert with transaction', (group) => {
 
     const { body } = await supertest(server)
       .post('/')
-      .attach('avatar', join(__dirname, '../cat.jpeg'))
+      .attach('avatar', join(__dirname, '../documents/cat.jpeg'))
 
     const users = await User.all()
 
     assert.lengthOf(users, 0)
     assert.isFalse(await Drive.exists(body.avatar.name))
+  })
+
+  test('do not create variants when variant is not enabled', async ({ assert }) => {
+    const Drive = app.container.resolveBinding('Adonis/Core/Drive')
+    const { column, BaseModel } = app.container.use('Adonis/Lucid/Orm')
+    const HttpContext = app.container.resolveBinding('Adonis/Core/HttpContext')
+
+    class User extends BaseModel {
+      @column({ isPrimary: true })
+      public id: string
+
+      @column()
+      public username: string
+
+      @attachment({ variants: false })
+      public avatar: AttachmentContract | null
+    }
+
+    const server = createServer((req, res) => {
+      const ctx = HttpContext.create('/', {}, req, res)
+
+      app.container.make(BodyParserMiddleware).handle(ctx, async () => {
+        const file = ctx.request.file('avatar')!
+
+        const user = new User()
+        user.username = 'virk'
+        user.avatar = Attachment.fromFile(file)
+        await user.save()
+
+        ctx.response.send(user)
+        ctx.response.finish()
+      })
+    })
+
+    const { body } = await supertest(server)
+      .post('/')
+      .attach('avatar', join(__dirname, '../documents/cat.jpeg'))
+
+    const users = await User.query().paginate(1)
+    assert.instanceOf(users[0].avatar, Attachment)
+
+    assert.isTrue(await Drive.exists(body.avatar.name))
+    assert.isUndefined(body.avatar.variants?.thumbnail?.name)
   })
 })
 
@@ -354,11 +397,11 @@ test.group('@attachment | update', (group) => {
 
     const { body: firstResponse } = await supertest(server)
       .post('/')
-      .attach('avatar', join(__dirname, '../cat.jpeg'))
+      .attach('avatar', join(__dirname, '../documents/cat.jpeg'))
 
     const { body: secondResponse } = await supertest(server)
       .post('/')
-      .attach('avatar', join(__dirname, '../cat.jpeg'))
+      .attach('avatar', join(__dirname, '../documents/cat.jpeg'))
 
     const users = await User.all()
 
@@ -408,11 +451,11 @@ test.group('@attachment | update', (group) => {
 
     const { body: firstResponse } = await supertest(server)
       .post('/')
-      .attach('avatar', join(__dirname, '../cat.jpeg'))
+      .attach('avatar', join(__dirname, '../documents/cat.jpeg'))
 
     const { body: secondResponse } = await supertest(server)
       .post('/')
-      .attach('avatar', join(__dirname, '../cat.jpeg'))
+      .attach('avatar', join(__dirname, '../documents/cat.jpeg'))
 
     const users = await User.all()
 
@@ -479,11 +522,11 @@ test.group('@attachment | update with transaction', (group) => {
 
     const { body: firstResponse } = await supertest(server)
       .post('/')
-      .attach('avatar', join(__dirname, '../cat.jpeg'))
+      .attach('avatar', join(__dirname, '../documents/cat.jpeg'))
 
     const { body: secondResponse } = await supertest(server)
       .post('/')
-      .attach('avatar', join(__dirname, '../cat.jpeg'))
+      .attach('avatar', join(__dirname, '../documents/cat.jpeg'))
 
     const users = await User.all()
 
@@ -538,11 +581,11 @@ test.group('@attachment | update with transaction', (group) => {
 
     const { body: firstResponse } = await supertest(server)
       .post('/')
-      .attach('avatar', join(__dirname, '../cat.jpeg'))
+      .attach('avatar', join(__dirname, '../documents/cat.jpeg'))
 
     const { body: secondResponse } = await supertest(server)
       .post('/')
-      .attach('avatar', join(__dirname, '../cat.jpeg'))
+      .attach('avatar', join(__dirname, '../documents/cat.jpeg'))
 
     const users = await User.all()
 
@@ -595,11 +638,11 @@ test.group('@attachment | update with transaction', (group) => {
 
     const { body: firstResponse } = await supertest(server)
       .post('/')
-      .attach('avatar', join(__dirname, '../cat.jpeg'))
+      .attach('avatar', join(__dirname, '../documents/cat.jpeg'))
 
     const { body: secondResponse } = await supertest(server)
       .post('/')
-      .attach('avatar', join(__dirname, '../cat.jpeg'))
+      .attach('avatar', join(__dirname, '../documents/cat.jpeg'))
 
     const users = await User.all()
 
@@ -663,7 +706,7 @@ test.group('@attachment | resetToNull', (group) => {
 
     const { body: firstResponse } = await supertest(server)
       .post('/')
-      .attach('avatar', join(__dirname, '../cat.jpeg'))
+      .attach('avatar', join(__dirname, '../documents/cat.jpeg'))
 
     await supertest(server).post('/')
 
@@ -712,7 +755,7 @@ test.group('@attachment | resetToNull', (group) => {
 
     const { body: firstResponse } = await supertest(server)
       .post('/')
-      .attach('avatar', join(__dirname, '../cat.jpeg'))
+      .attach('avatar', join(__dirname, '../documents/cat.jpeg'))
 
     await supertest(server).post('/')
 
@@ -779,7 +822,7 @@ test.group('@attachment | resetToNull with transaction', (group) => {
 
     const { body: firstResponse } = await supertest(server)
       .post('/')
-      .attach('avatar', join(__dirname, '../cat.jpeg'))
+      .attach('avatar', join(__dirname, '../documents/cat.jpeg'))
 
     await supertest(server).post('/')
 
@@ -833,7 +876,7 @@ test.group('@attachment | resetToNull with transaction', (group) => {
 
     const { body: firstResponse } = await supertest(server)
       .post('/')
-      .attach('avatar', join(__dirname, '../cat.jpeg'))
+      .attach('avatar', join(__dirname, '../documents/cat.jpeg'))
 
     await supertest(server).post('/')
 
@@ -884,7 +927,7 @@ test.group('@attachment | resetToNull with transaction', (group) => {
 
     const { body: firstResponse } = await supertest(server)
       .post('/')
-      .attach('avatar', join(__dirname, '../cat.jpeg'))
+      .attach('avatar', join(__dirname, '../documents/cat.jpeg'))
 
     await supertest(server).post('/')
 
@@ -948,7 +991,7 @@ test.group('@attachment | delete', (group) => {
 
     const { body: firstResponse } = await supertest(server)
       .post('/')
-      .attach('avatar', join(__dirname, '../cat.jpeg'))
+      .attach('avatar', join(__dirname, '../documents/cat.jpeg'))
 
     const user = await User.firstOrFail()
     await user.delete()
@@ -996,7 +1039,7 @@ test.group('@attachment | delete', (group) => {
 
     const { body } = await supertest(server)
       .post('/')
-      .attach('avatar', join(__dirname, '../cat.jpeg'))
+      .attach('avatar', join(__dirname, '../documents/cat.jpeg'))
 
     const user = await User.firstOrFail()
     try {
@@ -1062,7 +1105,7 @@ test.group('@attachment | delete with transaction', (group) => {
 
     const { body: firstResponse } = await supertest(server)
       .post('/')
-      .attach('avatar', join(__dirname, '../cat.jpeg'))
+      .attach('avatar', join(__dirname, '../documents/cat.jpeg'))
 
     const user = await User.firstOrFail()
     const trx = await Db.transaction()
@@ -1115,7 +1158,7 @@ test.group('@attachment | delete with transaction', (group) => {
 
     const { body } = await supertest(server)
       .post('/')
-      .attach('avatar', join(__dirname, '../cat.jpeg'))
+      .attach('avatar', join(__dirname, '../documents/cat.jpeg'))
 
     const user = await User.firstOrFail()
     const trx = await Db.transaction()
@@ -1186,7 +1229,7 @@ test.group('@attachment | find', (group) => {
 
     const { body } = await supertest(server)
       .post('/')
-      .attach('avatar', join(__dirname, '../cat.jpeg'))
+      .attach('avatar', join(__dirname, '../documents/cat.jpeg'))
 
     const user = await User.firstOrFail()
     assert.instanceOf(user.avatar, Attachment)
@@ -1270,7 +1313,7 @@ test.group('@attachment | find', (group) => {
 
     const { body } = await supertest(server)
       .post('/')
-      .attach('avatar', join(__dirname, '../cat.jpeg'))
+      .attach('avatar', join(__dirname, '../documents/cat.jpeg'))
 
     const user = await User.firstOrFail()
     assert.instanceOf(user.avatar, Attachment)
@@ -1334,7 +1377,7 @@ test.group('@attachment | fetch', (group) => {
 
     const { body } = await supertest(server)
       .post('/')
-      .attach('avatar', join(__dirname, '../cat.jpeg'))
+      .attach('avatar', join(__dirname, '../documents/cat.jpeg'))
 
     const users = await User.all()
     assert.instanceOf(users[0].avatar, Attachment)
@@ -1417,7 +1460,7 @@ test.group('@attachment | fetch', (group) => {
 
     const { body } = await supertest(server)
       .post('/')
-      .attach('avatar', join(__dirname, '../cat.jpeg'))
+      .attach('avatar', join(__dirname, '../documents/cat.jpeg'))
 
     const users = await User.all()
     assert.instanceOf(users[0].avatar, Attachment)
@@ -1481,7 +1524,7 @@ test.group('@attachment | paginate', (group) => {
 
     const { body } = await supertest(server)
       .post('/')
-      .attach('avatar', join(__dirname, '../cat.jpeg'))
+      .attach('avatar', join(__dirname, '../documents/cat.jpeg'))
 
     const users = await User.query().paginate(1)
     assert.instanceOf(users[0].avatar, Attachment)
@@ -1563,7 +1606,7 @@ test.group('@attachment | paginate', (group) => {
 
     const { body } = await supertest(server)
       .post('/')
-      .attach('avatar', join(__dirname, '../cat.jpeg'))
+      .attach('avatar', join(__dirname, '../documents/cat.jpeg'))
 
     const users = await User.query().paginate(1)
     assert.instanceOf(users[0].avatar, Attachment)
