@@ -100,7 +100,10 @@
   "adonisjs": {
     "types": "@jrmc/attachment-advanced",
     "providers": [
-      "@adonisjs/attachment-advanced"
+      "@jrmc/attachment-advanced"
+    ],
+    "commands": [
+      "@jrmc/attachment-advanced/build/commands"
     ]
   },
   "publishConfig": {

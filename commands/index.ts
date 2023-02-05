@@ -7,6 +7,4 @@
  * file that was distributed with this source code.
  */
 
-export default [
-  '@jrmc/attachment-advanced/build/commands/Attachment',
-]
+export default ['@jrmc/attachment-advanced/build/commands/Attachment']
