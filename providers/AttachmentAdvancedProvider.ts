@@ -30,6 +30,7 @@ export default class AttachmentAdvancedProvider {
       (AttachmentAdvanced, Drive, Config) => {
         AttachmentAdvanced.Attachment.setDrive(Drive)
         AttachmentAdvanced.Attachment.setConfig(Config.get('attachment', {}))
+        AttachmentAdvanced.Attachment.setEnvironment(this.application.environment)
       }
     )
   }

@@ -101,6 +101,11 @@ declare module '@ioc:Adonis/Addons/AttachmentAdvanced' {
     isDeleted: boolean
 
     /**
+     * Find if the variants should be regenerate for
+     */
+    shouldBeRegenerateFor?: string | Array<string>
+
+    /**
      * Object of attachment variants
      */
     variants: object
@@ -128,35 +133,25 @@ declare module '@ioc:Adonis/Addons/AttachmentAdvanced' {
     /**
      * Returns the URL for the file. Same as "Drive.getUrl()"
      */
-    getUrl(variantName?: string | null): Promise<string>
+    getUrl(variantName?: string): Promise<string>
 
     /**
      * Returns the signed URL for the file. Same as "Drive.getSignedUrl()"
      */
     getSignedUrl(
-      variantName?: string | null,
+      variantName?: string,
       options?: ContentHeaders & { expiresIn?: string | number }
     ): Promise<string>
-
-    /**
-     * Returns the URL for the preview file. Same as "Drive.getUrl()"
-     */
-    // getPreviewUrl(): Promise<string>
-
-    /**
-     * Returns the signed URL for the preview file. Same as "Drive.getSignedUrl()"
-     */
-    // getPreviewSignedUrl(options?: ContentHeaders & { expiresIn?: string | number }): Promise<string>
-
-    /**
-     * Returns variant
-     */
-    variant(variantName: string): object
 
     /**
      * Returns variant (alias variant())
      */
     preview(variantName: string): object
+
+    /**
+     * Returns variant
+     */
+    variant(variantName: string): object
 
     /**
      * Convert attachment to plain object to be persisted inside
@@ -188,10 +183,16 @@ declare module '@ioc:Adonis/Addons/AttachmentAdvanced' {
     new (attributes: AttachmentAttributes, file?: MultipartFileContract): AttachmentContract
     fromFile(file: MultipartFileContract): AttachmentContract
     fromDbResponse(response: string): AttachmentContract
+    regenerate(
+      attachment: AttachmentContract,
+      variantName?: string | Array<string>
+    ): AttachmentContract | null
     getDrive(): DriveManagerContract
     setDrive(drive: DriveManagerContract): void
     getConfig(): object
     setConfig(config: object): void
+    getEnvironment(): string
+    setEnvironment(env: string)
   }
 
   export const attachment: AttachmentDecorator

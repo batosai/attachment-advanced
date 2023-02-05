@@ -36,13 +36,13 @@ export class Variant implements VariantContract {
       formatoptions = config.format
     }
 
-    const buffer = await sharp(this.file, { failOnError: false })
+    const buffer = await sharp(this.file)
       .withMetadata()
       .resize(config.resize!)
       .toFormat(format, formatoptions)
       .toBuffer()
 
-    const metadata = await sharp(buffer, { failOnError: false }).metadata()
+    const metadata = await sharp(buffer).metadata()
     const type = await FileType.fromBuffer(buffer)
     this.format = metadata.format
     this.size = metadata.size

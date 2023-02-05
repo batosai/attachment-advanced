@@ -41,6 +41,21 @@ const REQUIRED_ATTRIBUTES = ['name', 'size', 'extname', 'mimeType']
 export class Attachment implements AttachmentContract {
   private static drive: DriveManagerContract
   private static attachmentConfig: AttachmentConfig
+  private static environment: string
+
+  /**
+   * Reference to the Environment mode
+   */
+  public static getEnvironment() {
+    return this.environment
+  }
+
+  /**
+   * Set the Environment mode
+   */
+  public static setEnvironment(environment: string) {
+    this.environment = environment
+  }
 
   /**
    * Reference to the drive
@@ -116,6 +131,23 @@ export class Attachment implements AttachmentContract {
   }
 
   /**
+   * Regenerate variants
+   */
+  public static regenerate(
+    attachmentOrigin: AttachmentContract,
+    variantName?: string | Array<string>
+  ) {
+    if (attachmentOrigin && attachmentOrigin.isPersisted) {
+      const attachment = new Attachment(attachmentOrigin.toObject())
+
+      attachment.shouldBeRegenerateFor = variantName ?? 'all'
+
+      return attachment
+    }
+    return null
+  }
+
+  /**
    * Attachment options
    */
   private options?: AttachmentOptions
@@ -161,6 +193,11 @@ export class Attachment implements AttachmentContract {
    * Find if the file has been deleted or not
    */
   public isDeleted: boolean
+
+  /**
+   * Find if the variants should be regenerate for
+   */
+  public shouldBeRegenerateFor?: string | Array<string>
 
   /**
    * Object of attachment variants
@@ -228,15 +265,30 @@ export class Attachment implements AttachmentContract {
       versions = variants
     }
 
+    if (this.shouldBeRegenerateFor && this.shouldBeRegenerateFor !== 'all') {
+      const data = {}
+
+      if (typeof this.shouldBeRegenerateFor === 'string') {
+        this.shouldBeRegenerateFor = [this.shouldBeRegenerateFor]
+      }
+
+      for (const v of this.shouldBeRegenerateFor) {
+        if (!versions[v]) continue
+
+        data[v] = versions[v]
+      }
+
+      return data
+    }
+
     return versions
   }
 
   /**
    * Generate variants
    */
-  private async generateVariants() {
+  private async generateVariants(filePath: string | undefined | Buffer) {
     const variantsConfig = this.getVariantsConfig()
-    let filePath: string | undefined | Buffer = this.file?.filePath
 
     if (variantsConfig === false) return
 
@@ -248,31 +300,36 @@ export class Attachment implements AttachmentContract {
       filePath = await videoToImage(this.file!.filePath as string)
     }
 
-    for (const key in variantsConfig) {
-      const variant = new Variant(filePath)
-      const buffer = await variant.generate({
-        ...variantsConfig[key],
-        folder: this.options?.folder,
+    await Promise.all(
+      Object.keys(variantsConfig).map(async (key) => {
+        const variant = new Variant(filePath)
+        const buffer = await variant.generate({
+          ...variantsConfig[key],
+          folder: this.options?.folder,
+        })
+
+        if (this.variants[key]) {
+          await this.getDisk().delete(this.variants[key].name)
+        }
+
+        await this.getDisk().put(variant.name, buffer!)
+
+        this.variants[key] = variant.toObject()
       })
-
-      await this.getDisk().put(variant.name, buffer!)
-
-      this.variants[key] = variant.toObject()
-    }
-
-    // Delete tmp file
-    if (filePath && (isPdf(this.mimeType) || isVideo(this.mimeType) || isDocument(this.mimeType))) {
-      fs.unlink(filePath, () => {})
-    }
+    )
   }
 
   /**
    * Delete variants
    */
   private async deleteVariants() {
-    for (const key in this.variants) {
-      await this.getDisk().delete(this.variants[key].name)
-    }
+    return await Promise.all(
+      Object.keys(this.variants).map((k) => {
+        const v = this.variants[k]
+        delete this.variants[k]
+        return this.getDisk().delete(v.name)
+      })
+    )
   }
 
   /**
@@ -287,6 +344,12 @@ export class Attachment implements AttachmentContract {
    * Save file to the disk. Results if noop when "this.isLocal = false"
    */
   public async save() {
+    if (this.shouldBeRegenerateFor) {
+      const filePath = await this.getDisk().makePath(this.name)
+      await this.generateVariants(filePath)
+      await this.computeUrl()
+    }
+
     /**
      * Do not persist already persisted file or if the
      * instance is not local
@@ -300,7 +363,16 @@ export class Attachment implements AttachmentContract {
      */
     await this.file!.moveToDisk('./', { name: this.generateName() }, this.options?.disk)
 
-    await this.generateVariants()
+    await this.generateVariants(this.file?.filePath)
+
+    // TODO new test
+    // Delete tmp file
+    if (
+      this.file?.filePath &&
+      (isPdf(this.mimeType) || isVideo(this.mimeType) || isDocument(this.mimeType))
+    ) {
+      fs.unlink(this.file?.filePath, () => {})
+    }
 
     /**
      * Assign name to the file
@@ -336,6 +408,13 @@ export class Attachment implements AttachmentContract {
    * Computes the URL for the attachment
    */
   public async computeUrl() {
+    /**
+     * Cannot compute url for a non web env
+     */
+    if (Attachment.getEnvironment() === 'console') {
+      return
+    }
+
     /**
      * Cannot compute url for a non persisted file
      */

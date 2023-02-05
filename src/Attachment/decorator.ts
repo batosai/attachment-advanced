@@ -70,13 +70,27 @@ async function persistAttachment(
 }
 
 /**
+ * Regenerate attachment
+ */
+async function regenerateAttachment(
+  modelInstance: LucidRow,
+  property: string,
+  options?: AttachmentOptions
+) {
+  if (modelInstance[property] && modelInstance[property].shouldBeRegenerateFor) {
+    modelInstance[property].setOptions(options)
+    return modelInstance[property].save()
+  }
+}
+
+/**
  * During commit, we should cleanup the old detached files
  */
 async function commit(modelInstance: LucidRow) {
   await Promise.allSettled(
-    modelInstance['attachments'].detached.map((attachment: AttachmentContract) => {
-      return attachment.delete()
-    })
+    modelInstance['attachments'].detached.map((attachment: AttachmentContract) =>
+      attachment.delete()
+    )
   )
 }
 
@@ -85,9 +99,9 @@ async function commit(modelInstance: LucidRow) {
  */
 async function rollback(modelInstance: LucidRow) {
   await Promise.allSettled(
-    modelInstance['attachments'].attached.map((attachment: AttachmentContract) => {
-      return attachment.delete()
-    })
+    modelInstance['attachments'].attached.map((attachment: AttachmentContract) =>
+      attachment.delete()
+    )
   )
 }
 
@@ -109,6 +123,18 @@ async function saveWithAttachments() {
     this.constructor['attachments'].map(
       (attachmentField: { property: string; options?: AttachmentOptions }) =>
         persistAttachment(this, attachmentField.property, attachmentField.options)
+    )
+  )
+
+  /**
+   * Persist regenerate attachments before saving the model to the database. This
+   * way if file saving fails we will not write anything to the
+   * database
+   */
+  await Promise.all(
+    this.constructor['attachments'].map(
+      (attachmentField: { property: string; options?: AttachmentOptions }) =>
+        regenerateAttachment(this, attachmentField.property, attachmentField.options)
     )
   )
 
