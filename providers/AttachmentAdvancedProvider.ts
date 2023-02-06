@@ -16,10 +16,12 @@ export default class AttachmentAdvancedProvider {
     this.application.container.bind('Adonis/Addons/AttachmentAdvanced', () => {
       const { Attachment } = require('../src/Attachment')
       const { attachment } = require('../src/Attachment/decorator')
+      const { Attachmentable } = require('../src/Mixin')
 
       return {
-        Attachment: Attachment,
-        attachment: attachment,
+        Attachment,
+        attachment,
+        Attachmentable,
       }
     })
   }

@@ -8,7 +8,8 @@
  */
 
 declare module '@ioc:Adonis/Addons/AttachmentAdvanced' {
-  import { ColumnOptions } from '@ioc:Adonis/Lucid/Orm'
+  import { ColumnOptions, LucidModel } from '@ioc:Adonis/Lucid/Orm'
+  import { NormalizeConstructor } from '@ioc:Adonis/Core/Helpers'
   import { MultipartFileContract } from '@ioc:Adonis/Core/BodyParser'
   import {
     DisksList,
@@ -195,6 +196,21 @@ declare module '@ioc:Adonis/Addons/AttachmentAdvanced' {
     setEnvironment(env: string)
   }
 
+  /**
+   * Filterable model
+   */
+  export interface AttachmentableModel {
+    attachmentRegenerate(variantName?: string | Array<string>)
+  }
+
+  /**
+   * Attachmentable mixin
+   */
+  export interface AttachmentableMixin {
+    <T extends NormalizeConstructor<LucidModel>>(superclass: T): T & AttachmentableModel
+  }
+
+  export const Attachmentable: AttachmentableMixin
   export const attachment: AttachmentDecorator
   export const Attachment: AttachmentConstructorContract
 }
