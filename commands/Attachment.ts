@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { BaseCommand } from '@adonisjs/core/build/standalone'
+import { BaseCommand, flags } from '@adonisjs/core/build/standalone'
 
 export default class Attachment extends BaseCommand {
   public static commandName = 'attachment:regenerate'
@@ -17,6 +17,12 @@ export default class Attachment extends BaseCommand {
     loadApp: true,
     stayAlive: false,
   }
+
+  @flags.string({ alias: 'M' })
+  public model: string
+
+  @flags.array({ alias: 'V' })
+  public variants: string[]
 
   public async run() {
     const path = this.application.resolveNamespaceDirectory('models')
@@ -28,8 +34,9 @@ export default class Attachment extends BaseCommand {
 
     await Promise.all(
       Object.keys(Models!).map(async (k) => {
+        if (this.model && k !== this.model) return
         if (Models![k].attachmentRegenerate) {
-          await Models![k].attachmentRegenerate()
+          await Models![k].attachmentRegenerate(this.variants)
         }
       })
     )
