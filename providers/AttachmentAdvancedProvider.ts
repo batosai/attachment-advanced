@@ -17,11 +17,13 @@ export default class AttachmentAdvancedProvider {
       const { Attachment } = require('../src/Attachment')
       const { attachment } = require('../src/Attachment/decorator')
       const { Attachmentable } = require('../src/Mixin')
+      const { AttachmentConfig } = require('../adonis-typings/attachment')
 
       return {
         Attachment,
         attachment,
         Attachmentable,
+        AttachmentConfig,
       }
     })
   }
