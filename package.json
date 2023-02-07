@@ -98,6 +98,14 @@
     "sharp": "^0.31.3"
   },
   "adonisjs": {
+    "templates": {
+			"config": [
+				{
+					"src": "config.txt",
+					"dest": "attachment"
+				}
+			]
+		},
     "types": "@jrmc/attachment-advanced",
     "providers": [
       "@jrmc/attachment-advanced"

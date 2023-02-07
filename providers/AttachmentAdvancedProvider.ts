@@ -33,7 +33,14 @@ export default class AttachmentAdvancedProvider {
       ['Adonis/Addons/AttachmentAdvanced', 'Adonis/Core/Drive', 'Adonis/Core/Config'],
       (AttachmentAdvanced, Drive, Config) => {
         AttachmentAdvanced.Attachment.setDrive(Drive)
-        AttachmentAdvanced.Attachment.setConfig(Config.get('attachment', {}))
+        AttachmentAdvanced.Attachment.setConfig(
+          Config.get('attachment', {
+            document: false,
+            video: false,
+            pdf: false,
+            image: false,
+          })
+        )
         AttachmentAdvanced.Attachment.setEnvironment(this.application.environment)
       }
     )
