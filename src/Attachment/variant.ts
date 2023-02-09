@@ -31,9 +31,9 @@ export class Variant implements VariantContract {
     let format = config.format ? config.format : 'jpg'
     let formatoptions = {}
 
-    if (typeof config.format === 'object') {
-      format = config.format.format ? config.format.format : 'jpg'
-      formatoptions = config.format
+    if (Array.isArray(config.format)) {
+      format = config.format[0] ? config.format[0] : 'jpg'
+      formatoptions = config.format[1]
     }
 
     const buffer = await sharp(this.file)
