@@ -140,8 +140,7 @@ declare module '@ioc:Adonis/Addons/AttachmentAdvanced' {
      * Returns the signed URL for the file. Same as "Drive.getSignedUrl()"
      */
     getSignedUrl(
-      variantName?: string,
-      options?: ContentHeaders & { expiresIn?: string | number }
+      options?: ContentHeaders & { expiresIn?: string | number } & { variant?: string }
     ): Promise<string>
 
     /**
