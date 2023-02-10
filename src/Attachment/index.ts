@@ -473,11 +473,10 @@ export class Attachment implements AttachmentContract {
    * Returns the signed URL for the file. Same as "Drive.getSignedUrl()"
    */
   public getSignedUrl(
-    variantName?: string | null,
-    options?: ContentHeaders & { expiresIn?: string | number }
+    options?: ContentHeaders & { expiresIn?: string | number } & { variant?: string }
   ) {
-    if (variantName && this.variants[variantName]) {
-      return this.getDisk().getSignedUrl(this.variant(variantName)?.name, options)
+    if (options?.variant && this.variants[options.variant]) {
+      return this.getDisk().getSignedUrl(this.variant(options.variant)?.name, options)
     }
     return this.getDisk().getSignedUrl(this.name, options)
   }
