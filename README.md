@@ -1,4 +1,4 @@
-# Attachment Lite
+# Attachment Advanced
 
 <div align="center">
   <img src="./assets/banner.jpeg" />
@@ -6,14 +6,14 @@
 
 ---
 
-[![github-actions-image]][github-actions-url] [![npm-image]][npm-url] [![license-image]][license-url] [![typescript-image]][typescript-url]
+[![license-image]][license-url] [![typescript-image]][typescript-url]
 
 A simple, opinionated package to convert any column on your Lucid model to an attachment data type.
 
-Attachment lite allows you to store a reference of user uploaded files within the database. It does not require any additional database tables and stores the file metadata as JSON within the same column.
+Attachment advanced allows you to store a reference of user uploaded files within the database. It does not require any additional database tables and stores the file metadata as JSON within the same column.
 
 ## How it works?
-The `attachment-lite` package is **an alternative to the media library approach**. I believe media libraries are great when creating a CMS that wants a central place to keep all the images/documents.
+The `attachment-advanced` package is **an alternative to the media library approach**. I believe media libraries are great when creating a CMS that wants a central place to keep all the images/documents.
 
 However, many applications like a SAAS product or a community forum do not need media libraries.
 
@@ -21,7 +21,7 @@ For example, websites like Twitter or dev.to don't have a media library section 
 
 When you update your profile image on Twitter, the old image disappears, and the new one appears. There is no central gallery of images to choose the profile picture from.
 
-A very long story to tell you that the `attachment-lite` package is an excellent solution for managing one-off file uploads in your application.
+A very long story to tell you that the `attachment-advanced` package is an excellent solution for managing one-off file uploads in your application.
 
 ## Features
 - Turn any column in your database to an attachment data type.
@@ -30,10 +30,58 @@ A very long story to tell you that the `attachment-lite` package is an excellent
 - Handles failure cases gracefully. No files will be stored if the model fails to persist.
 - Similarly, no old files are removed if the model fails to persist during an update or the deletion fails.
 
+## Attachment-lite vs Attachment-advanced
+
+`Attachment-advanced` is a fork of `Attachment-lite`. Attachment-advanced includes all the functionality of attachment-lite.
+
+Attachment-advanced adds the ability to generate `variants`/`previews` of the upload.
+
+It is possible to automatically generate variants of the image files. For example, generate a thumbnail, medium and large image.
+
+In the same way, it is possible to create previews for document and video files 
+
 ## Pre-requisites
-The `attachment-lite` package requires `@adonisjs/lucid >= v16.3.1` and `@adonisjs/core >= 5.3.4`.
+The `attachment-advanced` package requires `@adonisjs/lucid >= v16.3.1` and `@adonisjs/core >= 5.3.4`.
 
 Also, it relies on [AdonisJS drive](https://docs.adonisjs.com/guides/drive) for writing files on the disk.
+
+For document preview, it's required `LibreOffice` or `OpenOffice` software.
+
+If you only want PDF documents, prefere `poppler` software.
+
+For video preview, it's required [FFmpeg](http://www.ffmpeg.org) software.
+
+## Supported formats
+
+| Format | required |
+| ----------- | ----------- |
+| jpeg |  |
+| png |  | 
+| gif |  | 
+| webp |  | 
+| avif |  | 
+| tiff |  | 
+| mp4 | FFmpeg | 
+| webm | FFmpeg | 
+| mov | FFmpeg | 
+| avi | FFmpeg | 
+| mpeg | FFmpeg | 
+| 3gp | FFmpeg | 
+| ogg | FFmpeg | 
+| flv | FFmpeg | 
+| mkv | FFmpeg | 
+| pdf | LibreOffice / OpenOffice / poppler | 
+| odt | LibreOffice / OpenOffice |
+| ods | LibreOffice / OpenOffice |
+| docx | LibreOffice / OpenOffice | 
+| doc | LibreOffice / OpenOffice | 
+| numbers | LibreOffice / OpenOffice | 
+| pages | LibreOffice / OpenOffice |  
+| xlsx | LibreOffice / OpenOffice | 
+| xls | LibreOffice / OpenOffice | 
+| csv | LibreOffice / OpenOffice | 
+| rtf | LibreOffice / OpenOffice | 
+| txt | LibreOffice / OpenOffice |
 
 ## Setup
 Install the package from the npm registry as follows.
@@ -47,6 +95,72 @@ Next, configure the package by running the following ace command.
 ```sh
 node ace configure @jrmc/attachment-advanced
 ```
+
+## Config
+Configuration for variants/previews files (`config/attachment.ts`)
+
+```
+const attachmentConfig: AttachmentConfig = {
+  document: {
+    previews: {
+      thumbnail: {
+        resize: 300,
+        format: 'webp'
+      },
+      large: {
+        resize: 1024,
+        format: 'jpg'
+      },
+    }
+  },
+  video: {
+    previews: {
+      thumbnail: {
+        resize: 1024,
+        format: 'jpg'
+      },
+    }
+  },
+  pdf: {
+    bin: '/usr/bin', // optionnal
+    previews: {
+      thumbnail: {
+        resize: 300,
+        format: 'jpg'
+      },
+    }
+  },
+  image: {
+    variants: {
+      thumbnail: {
+        resize: 300,
+        format: 'jpg'
+      },
+      medium: {
+        resize: {
+          width: 500,
+          fit: 'contain',
+          position: 'right top',
+        },
+        format: [ 'jpg', {
+            quality: 10,
+            progressive: true
+        }]
+      },
+      large: {
+        resize: 1500,
+        format: 'jpg'
+      }
+    }
+  }
+}
+```
+
+Variant image is generate by [sharp module](https://sharp.pixelplumbing.com)
+
+Options resize is `number` or `object`(options) details in documentation : [sharp api resize](https://sharp.pixelplumbing.com/api-resize)
+
+Options format is `string` or `array` [ format,  options ] details in documentation : [sharp api outpout](https://sharp.pixelplumbing.com/api-output#toformat)
 
 ## Usage
 
@@ -95,7 +209,7 @@ import { BaseModel } from '@ioc:Adonis/Lucid/Orm'
 import {
   attachment,
   AttachmentContract
-} from '@ioc:Adonis/Addons/AttachmentAdvanced
+} from '@ioc:Adonis/Addons/AttachmentAdvanced'
 
 class User extends BaseModel {
   @attachment()
@@ -159,6 +273,73 @@ user.avatar = null
 await user.save()
 ```
 
+### Handling regenerations
+If you want to regenerate all the variants of an attachment property. Three methods are available.
+
+#### 1- Static method for one entity
+
+```ts
+import { Attachment } from '@ioc:Adonis/Addons/AttachmentAdvanced'
+
+class UsersController {
+  public update({ request }: HttpContextContract) {
+    const user = await User.findOrFail(request.param('id'))
+
+    user.avatar = Attachment.regenerate(user.avatar)
+
+    // or specify variant
+    user.avatar = Attachment.regenerate(user.avatar, 'medium')
+
+    // or specify multiple variants
+    user.avatar = Attachment.regenerate(user.avatar, ['thumbnail', 'large'])
+
+    await user.save()
+  }
+}
+```
+
+#### 2- Method Class for all entities
+
+```ts
+import { compose } from '@ioc:Adonis/Core/Helpers'
+import { attachment, AttachmentContract, Attachmentable } from '@ioc:Adonis/Addons/AttachmentAdvanced'
+
+class User extends compose(BaseModel, Attachmentable) {
+  @attachment()
+  public avatar: AttachmentContract | null
+}
+```
+
+```ts
+  await User.attachmentRegenerate()
+
+  // or specify variant
+  await User.attachmentRegenerate('medium')
+
+  // or specify multiple variants
+  await User.attachmentRegenerate(['thumbnail', 'large'])
+```
+
+#### 3- Command Ace
+
+```
+  # Regenerate all attachment for all models
+  node ace attachment:regenerate
+
+  # Regenerate all attachment for User Model
+  node ace attachment:regenerate --model User
+  node ace attachment:regenerate -M User
+
+  # Regenerate specify variants for all attachment for all Models
+  node ace attachment:regenerate --variants large,medium
+  node ace attachment:regenerate -V large,medium
+
+  # Regenerate specify variant for specify Model 
+  node ace attachment:regenerate -M User -V large
+```
+
+Note: Attachment command required `Attachmentable` in Models
+
 ### Handling deletes
 Upon deleting the model instance, all the related attachments will be removed from the disk.
 
@@ -194,12 +375,39 @@ class User extends BaseModel {
 }
 ```
 
-## Generating URLs
+## Specifying variants
 
-You can generate a URL for a given attachment using the `getUrl` or `getSignedUrl` methods. They are identical to the [Drive methods](https://docs.adonisjs.com/guides/drive#generating-urls), just that you don't have to specify the file name.
+It is possible to limit the variants on an attachment
 
 ```ts
+class User extends BaseModel {
+  @attachment({ variants: ['thumbnail', 'medium'] })
+  public avatar: AttachmentContract
+}
+```
+
+## Disabled variants for a specific model
+
+It is possible to disabled the variants for an attachment
+
+```ts
+class User extends BaseModel {
+  @attachment({ variants: false })
+  public avatar: AttachmentContract
+}
+```
+
+## Generating URLs
+
+You can generate a URL for a given attachment using the `getUrl` or `getSignedUrl` methods. They are identical to the [Drive methods](https://docs.adonisjs.com/guides/drive#generating-urls), just that you don't have to specify the file name and variant option
+
+```ts
+await user.avatar.getUrl()
+await user.avatar.getUrl('thumbnail')
+
 await user.avatar.getSignedUrl({ expiresIn: '30mins' })
+await user.avatar.getSignedUrl({ variant: 'thumbnail' })
+await user.avatar.getSignedUrl({ variant: 'thumbnail', expiresIn: '30mins' })
 ```
 
 ## Generating URLs for the API response
@@ -234,6 +442,10 @@ Fetch result
 ```ts
 const users = await User.all()
 users[0].avatar.url // pre computed already 
+
+users[0].avatar.variants?.thumbnail?.url // pre computed already
+user.avatar.variant('thumbnail')?.url // pre computed already
+user.avatar.preview('thumbnail')?.url // alias variant()
 ```
 
 Find result
@@ -290,8 +502,8 @@ await User.preComputeUrls(user)
 return user
 ```
 
-## Using Attachment lite with model factories
-Attachment lite primarly uses the multipart request body to persist user upload files. However, you can also construct an instance of `Attachment` class manually and use the AdonisJS drive to persist the corresponding file.
+## Using Attachment advanced with model factories
+Attachment advanced primarly uses the multipart request body to persist user upload files. However, you can also construct an instance of `Attachment` class manually and use the AdonisJS drive to persist the corresponding file.
 
 In the following example, we create an instance of the Attachment class to represent the Post cover image.
 
@@ -315,7 +527,7 @@ export default Factory.define(Post, async ({ faker }) => {
 
   /**
    * Step 2: Mark image as persisted, this will disable the
-   * functions of attachment lite that looks for multipart
+   * functions of attachment advanced that looks for multipart
    * body and attempts to write the file from the stream
    */
   coverImage.isPersisted = true
@@ -331,12 +543,6 @@ export default Factory.define(Post, async ({ faker }) => {
   }
 }).build()
 ```
- 
-[github-actions-image]: https://img.shields.io/github/workflow/status/adonisjs/attachment-lite/test?style=for-the-badge
-[github-actions-url]: https://github.com/adonisjs/attachment-lite/actions/workflows/test.yml "github-actions"
-
-[npm-image]: https://img.shields.io/npm/v/@jrmc/attachment-advanced.svg?style=for-the-badge&logo=npm
-[npm-url]: https://npmjs.org/package/@jrmc/attachment-advanced "npm"
 
 [license-image]: https://img.shields.io/npm/l/@jrmc/attachment-advanced?color=blueviolet&style=for-the-badge
 [license-url]: LICENSE.md "license"
