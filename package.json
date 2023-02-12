@@ -1,12 +1,17 @@
 {
   "name": "@jrmc/attachment-advanced",
-  "version": "0.0.2",
+  "version": "0.0.14",
   "description": "Turn any field on your Lucid model to an attachment data type",
   "main": "build/providers/AttachmentAdvancedProvider.js",
   "files": [
     "build/adonis-typings",
     "build/providers",
-    "build/src"
+    "build/commands",
+    "build/src",
+    "templates",
+    "README.md",
+    "LICENSE.md",
+    "package.json"
   ],
   "typings": "./build/adonis-typings/index.d.ts",
   "scripts": {
@@ -35,6 +40,10 @@
     "resize-images",
     "optimize-images",
     "image",
+    "pdf",
+    "video",
+    "document",
+    "word",
     "sharp"
   ],
   "author": "jeremy,batosai",
