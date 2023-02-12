@@ -287,17 +287,17 @@ export class Attachment implements AttachmentContract {
   /**
    * Generate variants
    */
-  private async generateVariants(filePath: string | undefined | Buffer) {
+  private async generateVariants(filePath: string | Buffer) {
     const variantsConfig = this.getVariantsConfig()
 
     if (variantsConfig === false) return
 
     if (variantsConfig && isPdf(this.mimeType) === true && Attachment.getConfig().pdf) {
-      filePath = await pdfToImage(this.file!.filePath as string)
+      filePath = await pdfToImage(filePath as string)
     } else if (variantsConfig && isDocument(this.mimeType) === true) {
-      filePath = await documentToImage(this.file!.filePath as string)
+      filePath = await documentToImage(filePath as string)
     } else if (variantsConfig && isVideo(this.mimeType) === true) {
-      filePath = await videoToImage(this.file!.filePath as string)
+      filePath = await videoToImage(filePath as string)
     }
 
     await Promise.all(
@@ -317,6 +317,14 @@ export class Attachment implements AttachmentContract {
         this.variants[key] = variant.toObject()
       })
     )
+
+    // Delete tmp file
+    if (
+      this.file &&
+      (isPdf(this.mimeType) || isVideo(this.mimeType) || isDocument(this.mimeType))
+    ) {
+      fs.unlink(filePath, () => {})
+    }
   }
 
   /**
@@ -363,16 +371,7 @@ export class Attachment implements AttachmentContract {
      */
     await this.file!.moveToDisk('./', { name: this.generateName() }, this.options?.disk)
 
-    await this.generateVariants(this.file?.filePath)
-
-    // TODO new test
-    // Delete tmp file
-    if (
-      this.file?.filePath &&
-      (isPdf(this.mimeType) || isVideo(this.mimeType) || isDocument(this.mimeType))
-    ) {
-      fs.unlink(this.file?.filePath, () => {})
-    }
+    await this.generateVariants(this.file?.filePath!)
 
     /**
      * Assign name to the file
