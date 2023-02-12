@@ -333,13 +333,15 @@ export class Attachment implements AttachmentContract {
    * Delete variants
    */
   private async deleteVariants() {
-    return await Promise.all(
-      Object.keys(this.variants).map((k) => {
-        const v = this.variants[k]
-        delete this.variants[k]
-        return this.getDisk().delete(v.name)
-      })
-    )
+    if (this.variants) {
+      return await Promise.all(
+        Object.keys(this.variants).map((k) => {
+          const v = this.variants[k]
+          delete this.variants[k]
+          return this.getDisk().delete(v.name)
+        })
+      )
+    }
   }
 
   /**
