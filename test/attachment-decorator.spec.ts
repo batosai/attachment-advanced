@@ -467,7 +467,7 @@ test.group('@attachment | update', (group) => {
     assert.isTrue(await Drive.exists(firstResponse.avatar.name))
     assert.isTrue(await Drive.exists(firstResponse.avatar.variants.thumbnail.name))
     assert.isFalse(await Drive.exists(secondResponse.avatar.name))
-    assert.isFalse(await Drive.exists(secondResponse.avatar.variants.thumbnail.name))
+    assert.deepEqual(secondResponse.avatar.variants, {})
   })
 })
 
@@ -597,7 +597,7 @@ test.group('@attachment | update with transaction', (group) => {
     assert.isTrue(await Drive.exists(firstResponse.avatar.name))
     assert.isTrue(await Drive.exists(firstResponse.avatar.variants.thumbnail.name))
     assert.isFalse(await Drive.exists(secondResponse.avatar.name))
-    assert.isFalse(await Drive.exists(secondResponse.avatar.variants.thumbnail.name))
+    assert.deepEqual(secondResponse.avatar.variants, {})
   })
 
   test('cleanup attachments when rollback is called after success', async ({ assert }) => {
@@ -654,7 +654,7 @@ test.group('@attachment | update with transaction', (group) => {
     assert.isTrue(await Drive.exists(firstResponse.avatar.name))
     assert.isTrue(await Drive.exists(firstResponse.avatar.variants.thumbnail.name))
     assert.isFalse(await Drive.exists(secondResponse.avatar.name))
-    assert.isFalse(await Drive.exists(secondResponse.avatar.variants.thumbnail.name))
+    assert.deepEqual(secondResponse.avatar.variants, {})
   })
 })
 

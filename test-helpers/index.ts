@@ -147,11 +147,10 @@ export async function setupApplication(
               fit: 'contain',
               position: 'right top',
             },
-            format: {
-              format: 'jpg',
+            format: [ 'jpg', {
               quality: 10,
               progressive: true
-            }
+            }]
           },
           large: {
             resize: 1500,
