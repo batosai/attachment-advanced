@@ -21,3 +21,5 @@ const attachmentConfig: AttachmentConfig = {
     }
   }
 }
+
+export default attachmentConfig
