@@ -1,6 +1,6 @@
 {
   "name": "@jrmc/attachment-advanced",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "description": "Turn any field on your Lucid model to an attachment data type",
   "main": "build/providers/AttachmentAdvancedProvider.js",
   "files": [
@@ -8,7 +8,7 @@
     "build/providers",
     "build/commands",
     "build/src",
-    "templates",
+    "build/templates",
     "README.md",
     "LICENSE.md",
     "package.json"
@@ -18,8 +18,9 @@
     "mrm": "mrm --preset=@adonisjs/mrm-preset",
     "test": "node -r @adonisjs/require-ts/build/register bin/test.ts",
     "clean": "del build",
+    "copyfiles": "copyfiles \"templates/**/*.txt\" build",
     "compile": "npm run lint && npm run clean && tsc",
-    "build": "npm run compile",
+    "build": "npm run compile && npm run copyfiles",
     "prepublishOnly": "npm run build",
     "lint": "eslint . --ext=.ts",
     "format": "prettier --write .",
@@ -61,6 +62,7 @@
     "@types/node": "^17.0.35",
     "@types/supertest": "^2.0.12",
     "commitizen": "^4.2.4",
+    "copyfiles": "^2.4.1",
     "cz-conventional-changelog": "^3.3.0",
     "del-cli": "^4.0.1",
     "eslint": "^8.16.0",
@@ -108,13 +110,13 @@
   },
   "adonisjs": {
     "templates": {
-			"config": [
-				{
-					"src": "config.txt",
-					"dest": "attachment"
-				}
-			]
-		},
+      "config": [
+        {
+          "src": "config.txt",
+          "dest": "attachment"
+        }
+      ]
+    },
     "types": "@jrmc/attachment-advanced",
     "providers": [
       "@jrmc/attachment-advanced"
