@@ -40,6 +40,8 @@ It is possible to automatically generate variants of the image files. For exampl
 
 In the same way, it is possible to create previews for document and video files 
 
+Migratation `Attachment-lite` in `Attachment-advanced` is easy. All feature `Attachment-lite` is compatible with `Attachment-advanced`
+
 ## Pre-requisites
 The `attachment-advanced` package requires `@adonisjs/lucid >= v16.3.1` and `@adonisjs/core >= 5.3.4`.
 
