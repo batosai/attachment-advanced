@@ -16,9 +16,11 @@ import { join } from 'path'
 import supertest from 'supertest'
 import { createServer } from 'http'
 import { ApplicationContract } from '@ioc:Adonis/Core/Application'
+import { AttachmentContract } from '@ioc:Adonis/Addons/AttachmentAdvanced'
 import { BodyParserMiddleware } from '@adonisjs/bodyparser/build/src/BodyParser'
 
 import { Attachment } from '../src/Attachment'
+import { attachment } from '../src/Attachment/decorator'
 import { setup, cleanup, setupApplication } from '../test-helpers'
 
 let app: ApplicationContract
@@ -310,6 +312,80 @@ test.group('Attachment | fromFile', (group) => {
 
     const Drive = app.container.resolveBinding('Adonis/Core/Drive')
     assert.isTrue(await Drive.exists(body.name))
+    assert.isTrue(await Drive.exists(body.variants.thumbnail.name))
+  })
+})
+
+test.group('Attachment | regenerate', (group) => {
+  group.setup(async () => {
+    app = await setupApplication()
+    await setup(app)
+
+    app.container.resolveBinding('Adonis/Core/Route').commit()
+    Attachment.setDrive(app.container.resolveBinding('Adonis/Core/Drive'))
+    Attachment.setConfig(app.container.resolveBinding('Adonis/Core/Config').get('attachment', {}))
+  })
+
+  group.each.teardown(async () => {
+    await app.container.resolveBinding('Adonis/Lucid/Database').connection().truncate('users')
+  })
+
+  group.teardown(async () => {
+    await cleanup(app)
+  })
+
+  test('regenerate attachment from the user uploaded file', async ({ assert }) => {
+    const Drive = app.container.resolveBinding('Adonis/Core/Drive')
+    const { column, BaseModel } = app.container.use('Adonis/Lucid/Orm')
+    const HttpContext = app.container.resolveBinding('Adonis/Core/HttpContext')
+    const Db = app.container.resolveBinding('Adonis/Lucid/Database')
+
+    class User extends BaseModel {
+      @column({ isPrimary: true })
+      public id: string
+
+      @column()
+      public username: string
+
+      @attachment()
+      public avatar: AttachmentContract | null
+    }
+
+    const server = createServer((req, res) => {
+      const ctx = HttpContext.create('/', {}, req, res)
+
+      app.container.make(BodyParserMiddleware).handle(ctx, async () => {
+        const file = ctx.request.file('avatar')!
+        const trx = await Db.transaction()
+
+        const user = new User()
+        user.username = 'virk'
+        user.avatar = Attachment.fromFile(file)
+
+        try {
+          await user.useTransaction(trx).save()
+        } catch (error) {
+          await trx.rollback()
+        }
+
+        user.avatar = Attachment.regenerate(user.avatar)
+
+        try {
+          await user.useTransaction(trx).save()
+          await trx.commit()
+        } catch (error) {
+          await trx.rollback()
+        }
+
+        ctx.response.send(user.avatar)
+        ctx.response.finish()
+      })
+    })
+
+    const { body } = await supertest(server)
+      .post('/')
+      .attach('avatar', join(__dirname, '../documents/cat.jpeg'))
+
     assert.isTrue(await Drive.exists(body.variants.thumbnail.name))
   })
 })
