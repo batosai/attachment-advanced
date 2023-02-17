@@ -134,6 +134,25 @@ const attachmentConfig: AttachmentConfig = {
   },
   image: {
     variants: {
+      square: { // Write 200px square auto-cropped image data to writableStream
+      square: { // Write 200px square auto-cropped image data to writableStream
+        resize: {
+          width: 200,
+          height: 200,
+          fit: sharp.fit.cover,
+          position: sharp.strategy.entropy
+        }
+      },
+      bg: {
+        resize: { // contained within the north-east corner of a semi-transparent white canvas
+          width: 200,
+          height: 300,
+          kernel: sharp.kernel.nearest,
+          fit: 'contain',
+          position: 'right top',
+          background: { r: 255, g: 0, b: 0, alpha: 0.5 }
+        }
+      },
       thumbnail: {
         resize: 300,
         format: 'jpg'
