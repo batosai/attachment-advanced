@@ -135,7 +135,6 @@ const attachmentConfig: AttachmentConfig = {
   image: {
     variants: {
       square: { // Write 200px square auto-cropped image data to writableStream
-      square: { // Write 200px square auto-cropped image data to writableStream
         resize: {
           width: 200,
           height: 200,
