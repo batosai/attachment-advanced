@@ -20,7 +20,7 @@ import { AttachmentContract } from '@ioc:Adonis/Addons/AttachmentAdvanced'
 import { BodyParserMiddleware } from '@adonisjs/bodyparser/build/src/BodyParser'
 
 import { Attachment } from '../src/Attachment'
-import { attachment } from '../src/Attachment/decorator'
+import { attachment as attchment } from '../src/Attachment/decorator'
 import { setup, cleanup, setupApplication } from '../test-helpers'
 
 let app: ApplicationContract
@@ -347,7 +347,7 @@ test.group('Attachment | regenerate', (group) => {
       @column()
       public username: string
 
-      @attachment()
+      @attchment()
       public avatar: AttachmentContract | null
     }
 

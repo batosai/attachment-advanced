@@ -14,15 +14,15 @@ import FileType from 'file-type'
 
 export class Variant implements VariantContract {
   public name: string
-  public format: string
+  public format?: string
   public extname?: string
   public mimeType?: string
-  public size: string
-  public width: string
-  public height: string
-  public isProgressive: boolean
-  public hasAlpha: boolean
-  public orientation: number
+  public size?: number
+  public width?: number
+  public height?: number
+  public isProgressive?: boolean
+  public hasAlpha?: boolean
+  public orientation?: number
   public url: string
 
   constructor(private file?: string | Buffer) {}
