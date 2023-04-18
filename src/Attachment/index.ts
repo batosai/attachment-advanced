@@ -292,7 +292,8 @@ export class Attachment implements AttachmentContract {
   private async generateVariants(filePath: string | Buffer) {
     const variantsConfig = this.getVariantsConfig()
 
-    if (variantsConfig === false) return
+    // disabled generation if config is false or driver is Fake
+    if (variantsConfig === false || this.getDisk().constructor.name === 'FakeDriver') return
 
     if (variantsConfig && isPdf(this.mimeType) === true && Attachment.getConfig().pdf) {
       filePath = await pdfToImage(filePath as string)
