@@ -3,9 +3,9 @@ name: Main
 on: [push]
 
 jobs:
-  prepare:
+  test:
     runs-on: ubuntu-latest
-    name: Prepare app
+    name: Test
     steps:
       - name: Install libvips
         run: sudo apt-get install -y libvips-dev
@@ -19,11 +19,6 @@ jobs:
       - name: Install ffmpeg
         run: sudo apt-get install -y ffmpeg
 
-  test:
-    needs: prepare
-    runs-on: ubuntu-latest
-    name: Build & test app
-    steps:
       - name: Checkout
         uses: actions/checkout@v3
 
