@@ -1,5 +1,5 @@
 
-name: Main
+name: Test
 on: [push]
 
 jobs:
