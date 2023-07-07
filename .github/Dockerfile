@@ -6,5 +6,5 @@ RUN apk add vips-dev vips-cpp musl build-base --update-cache
 RUN apk add --no-cache sqlite
 
 FROM base AS dependencies
-COPY ./../package*.json ./
+COPY /package*.json ./
 RUN npm ci
