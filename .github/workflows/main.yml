@@ -10,6 +10,9 @@ jobs:
       - name: Install libvips
         run: sudo apt-get install -y libvips-dev
 
+      - name: Install poppler
+        run: sudo apt-get install -y poppler-utils
+
       - name: Install libreoffice
         run: sudo apt-get install -y libreoffice
 
