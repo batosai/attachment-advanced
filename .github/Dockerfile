@@ -1,5 +1,6 @@
-# Container image that runs your code
-FROM node:18.15.0-alpine
+ARG NODE_IMAGE=node:18.16.1-alpine
+
+FROM $NODE_IMAGE AS base
 
 # for libvips : sharp
 RUN apk add vips-dev vips-cpp musl build-base --update-cache
