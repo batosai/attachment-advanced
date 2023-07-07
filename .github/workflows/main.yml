@@ -8,16 +8,16 @@ jobs:
     name: Test
     steps:
       - name: Install libvips
-        run: apt install -y libvips-dev
+        run: sudo apt-get install -y libvips-dev
 
       - name: Install poppler
-        run: apt install -y poppler-utils
+        run: sudo apt-get install -y poppler-utils
 
       - name: Install libreoffice
-        run: apt install -y libreoffice libreoffice-core
+        run: sudo apt-get install -y libreoffice libreoffice-core
 
       - name: Install ffmpeg
-        run: apt install -y ffmpeg
+        run: sudo apt-get install -y ffmpeg
 
       - name: Checkout
         uses: actions/checkout@v3
