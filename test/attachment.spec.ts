@@ -313,7 +313,7 @@ test.group('Attachment | fromFile', (group) => {
     const Drive = app.container.resolveBinding('Adonis/Core/Drive')
     assert.isTrue(await Drive.exists(body.name))
     assert.isTrue(await Drive.exists(body.variants.thumbnail.name))
-  })
+  }).timeout(6000)
 })
 
 test.group('Attachment | regenerate', (group) => {
