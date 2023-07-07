@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v3
       - name: Build by docker
         id: app
-        uses: .github/ # Uses an action in the root directory
+        uses: ./.github/ # Uses an action in the root directory
         with:
           who-to-greet: 'Jerem'
       # Use the output from the `hello` step
