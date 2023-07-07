@@ -54,6 +54,7 @@ export const documentToImage = async (documentPath) => {
     // output: filename,
     outdir: os.tmpdir(),
     type,
+    timeout: 5000,
   })
   return path.join(outdir, filename)
 }
