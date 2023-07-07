@@ -14,7 +14,10 @@ jobs:
         run: sudo apt-get install -y poppler-utils
 
       - name: Install libreoffice
-        run: sudo apt-get install -y libreoffice libreoffice-nlpsolver
+        run: sudo apt-get install -y libreoffice
+
+      - name: Install ffmpeg
+        run: sudo apt-get install -y ffmpeg
 
       - name: Checkout
         uses: actions/checkout@v3
