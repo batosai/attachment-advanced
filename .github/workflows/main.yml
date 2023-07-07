@@ -7,15 +7,24 @@ jobs:
     runs-on: ubuntu-latest
     name: Build app
     steps:
-      # To use this repository's private action,
-      # you must check out the repository
+      - name: Install libvips
+        run: sudo apt-get install -y vips-dev vips-cpp musl
+
+      - name: Install libreoffice
+        run: sudo apt-get install -y libreoffice
+
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Build by docker
-        id: app
-        uses: ./.github/ # Uses an action in the root directory
+
+      - name: Setup node
+      - uses: actions/setup-node@v3
         with:
-          who-to-greet: 'Jerem'
-      # Use the output from the `hello` step
-      - name: Get the output time
-        run: echo "The time was ${{ steps.app.outputs.time }}"
+          node-version: 18
+          registry-url: https://registry.npmjs.org/
+
+      - name: Install
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
