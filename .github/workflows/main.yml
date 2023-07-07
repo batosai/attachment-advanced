@@ -1,0 +1,19 @@
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build app
+    steps:
+      # To use this repository's private action,
+      # you must check out the repository
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Build by docker
+        id: app
+        uses: .github/ # Uses an action in the root directory
+        with:
+          who-to-greet: 'Jerem'
+      # Use the output from the `hello` step
+      - name: Get the output time
+        run: echo "The time was ${{ steps.app.outputs.time }}"
