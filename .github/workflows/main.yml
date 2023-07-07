@@ -21,6 +21,7 @@ jobs:
 
   test:
     needs: prepare
+    runs-on: ubuntu-latest
     name: Build & test app
     steps:
       - name: Checkout
