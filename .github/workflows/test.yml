@@ -1,5 +1,5 @@
 
-name: Test
+name: Test CI
 on: [push]
 
 jobs:
