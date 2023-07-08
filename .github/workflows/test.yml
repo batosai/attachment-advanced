@@ -50,6 +50,7 @@ jobs:
             ${{ env[job.status] }} ${{ github.actor }} created commit:
             ${{ github.event.commits[0].message }}
             ${{ github.ref }}
+            ${{ github.event.release.tag_name }}
 
             Repository: ${{ github.repository }}
             See changes: https://github.com/${{ github.repository }}/commit/${{ github.sha }}
