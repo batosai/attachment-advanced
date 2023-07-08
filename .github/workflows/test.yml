@@ -46,6 +46,7 @@ jobs:
         with:
           token: ${{ secrets.BOT_TOKEN }}
           to: ${{ secrets.CHAT_ID }}
+          disable_web_page_preview: true
           message: |
             ${{ env[job.status] }} ${{ github.actor }} created commit:
             ${{ github.event.commits[0].message }}
