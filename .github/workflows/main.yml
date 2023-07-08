@@ -57,6 +57,7 @@ jobs:
 
   release:
     name: Release
+    id: release
     needs: test
     if: github.ref_name == 'master'
     runs-on: ubuntu-22.04
