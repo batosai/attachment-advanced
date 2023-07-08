@@ -92,6 +92,7 @@ jobs:
           to: ${{ secrets.CHAT_ID }}
           message: |
             Release : ${{ env[steps.release.release_created] }}
+            Create : ${{ steps.release.release_created }}
             Tag: ${{ steps.version.outputs.release_tag }}
 
 
