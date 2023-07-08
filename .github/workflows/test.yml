@@ -47,9 +47,9 @@ jobs:
           token: ${{ secrets.BOT_TOKEN }}
           to: ${{ secrets.CHAT_ID }}
           message: |
-            ${{ github.actor }} created commit:
+            @${{ github.actor }} created commit:
             Commit message: ${{ github.event.commits[0].message }}
-            Job Status: ${{ job.status }}
+            Job Status: ${{ job.status == 'success' ? '✅' : '🔴' }} ${{ job.status }}
 
             Repository: ${{ github.repository }}
 
