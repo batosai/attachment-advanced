@@ -91,8 +91,8 @@ jobs:
           token: ${{ secrets.BOT_TOKEN }}
           to: ${{ secrets.CHAT_ID }}
           message: |
-            Release : ${{ env[steps.release.release_created] }}
-            Create : ${{ steps.release.release_created }}
+            Release : ${{ env[steps.release.outputs.release_created] }}
+            Create : ${{ steps.release.outputs.release_created }}
             Tag: ${{ steps.version.outputs.release_tag }}
 
 
