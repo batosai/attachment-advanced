@@ -4,8 +4,8 @@ on: [push]
 
 env:
   STATUS:
-    success: '✅'
-    failure: '🔴'
+    success: "✅"
+    failure: "🔴"
 
 jobs:
   test:
