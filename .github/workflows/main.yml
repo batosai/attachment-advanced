@@ -71,6 +71,13 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           path: "./package.json" # optional, will use ./package.json by default
 
+      - run: |
+          echo 'Release created: ${{ steps.release.outputs.release_created }}' # 'true' or 'false'
+          echo 'Release exists: ${{ steps.release.outputs.release_exists }}' # 'true' or 'false'
+          echo 'Release tag: ${{ steps.release.outputs.release_tag }}' # The tag from package.json
+      - if: ${{ steps.release.outputs.release_exists == 'true' }}
+        run: |
+
       - name: Notification
         if: ${{ always() }}
         uses: appleboy/telegram-action@master
@@ -80,7 +87,7 @@ jobs:
           message: |
             Repository: ${{ github.repository }}
             Release : ${{ env[job.status] }}
-            Tag: ${{ github.event.release.tag_name }}
+            Tag: ${{ steps.release.outputs.release_tag }}
 
 
 
