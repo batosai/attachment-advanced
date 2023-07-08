@@ -46,10 +46,20 @@ jobs:
         with:
           token: ${{ secrets.BOT_TOKEN }}
           to: ${{ secrets.CHAT_ID }}
+          if: job.status == 'success'
           message: |
             @${{ github.actor }} created commit:
             Commit message: ${{ github.event.commits[0].message }}
-            Job Status: ${{ job.status == 'success' ? '✅' : '🔴' }} ${{ job.status }}
+            Job Status: ✅ ${{ job.status }}
+
+            Repository: ${{ github.repository }}
+
+            See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
+          if: job.status != 'success'
+          message: |
+            @${{ github.actor }} created commit:
+            Commit message: ${{ github.event.commits[0].message }}
+            Job Status: 🔴 ${{ job.status }}
 
             Repository: ${{ github.repository }}
 
