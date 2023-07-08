@@ -5,6 +5,7 @@ on: [push]
 env:
   success: ✅
   failure: 🔴
+  cancelled: ❌
 
 jobs:
   test:
@@ -39,12 +40,14 @@ jobs:
         run: npm test
 
       - name: Notification
+        if: ${{ always() }}
         uses: appleboy/telegram-action@master
         with:
           token: ${{ secrets.BOT_TOKEN }}
           to: ${{ secrets.CHAT_ID }}
           message: |
-            ${{ env[job.status] }} ${{ github.actor }} created commit: ${{ github.event.commits[0].message }}
+            ${{ env[job.status] }} ${{ github.actor }} created commit:
+            ${{ github.event.commits[0].message }}
 
             Repository: ${{ github.repository }}
             See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
