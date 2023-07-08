@@ -38,6 +38,6 @@ jobs:
         if: cancelled() == false
         uses: xinthink/action-telegram@v1.1
         with:
-          botToken: ${{ secrets.BotToken }}
-          chatId: ${{ secrets.ChatID }}
+          botToken: ${{ secrets.BOT_TOKEN }}
+          chatId: ${{ secrets.CHAT_ID }}
           jobStatus: ${{ job.status }}
