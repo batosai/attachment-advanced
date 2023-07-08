@@ -3,9 +3,9 @@ name: Test CI
 on: [push]
 
 env:
-  - STATE:
-    - success: ✅
-    - failure: 🔴
+  STATUS:
+    success: ✅
+    failure: 🔴
 
 jobs:
   test:
@@ -45,7 +45,7 @@ jobs:
           token: ${{ secrets.BOT_TOKEN }}
           to: ${{ secrets.CHAT_ID }}
           message: |
-            ${{ env.STATE[job.status] }} ${{ github.actor }} created commit: ${{ github.event.commits[0].message }}
+            ${{ env.STATUS[job.status] }} ${{ github.actor }} created commit: ${{ github.event.commits[0].message }}
 
             Repository: ${{ github.repository }}
             See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
