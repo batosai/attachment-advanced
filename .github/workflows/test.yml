@@ -2,6 +2,11 @@
 name: Test CI
 on: [push]
 
+env:
+  STATUS:
+    success: ✅
+    failure: 🔴
+
 jobs:
   test:
     runs-on: ubuntu-22.04
@@ -34,32 +39,13 @@ jobs:
       - name: Run tests
         run: npm test
 
-      - name: Notification Success
-        if: job.status == 'success'
+      - name: Notification
         uses: appleboy/telegram-action@master
         with:
           token: ${{ secrets.BOT_TOKEN }}
           to: ${{ secrets.CHAT_ID }}
           message: |
-            @${{ github.actor }} created commit:
-            Commit message: ${{ github.event.commits[0].message }}
-            Job Status: ✅ ${{ job.status }}
+            ${{ env.STATUS[job.status] }} ${{ github.actor }} created commit: ${{ github.event.commits[0].message }}
 
             Repository: ${{ github.repository }}
-
-            See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
-
-      - name: Notification Error
-        if: job.status != 'success'
-        uses: appleboy/telegram-action@master
-        with:
-          token: ${{ secrets.BOT_TOKEN }}
-          to: ${{ secrets.CHAT_ID }}
-          message: |
-            @${{ github.actor }} created commit:
-            Commit message: ${{ github.event.commits[0].message }}
-            Job Status: 🔴 ${{ job.status }}
-
-            Repository: ${{ github.repository }}
-
             See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
