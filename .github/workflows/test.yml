@@ -36,7 +36,7 @@ jobs:
 
       - name: Notification
         if: cancelled() == false
-        uses: xinthink/action-telegram@v1.1
+        uses: yanzay/notify-telegram@v0.1.0
         with:
           botToken: ${{ secrets.BOT_TOKEN }}
           chatId: ${{ secrets.CHAT_ID }}
