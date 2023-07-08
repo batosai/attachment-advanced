@@ -35,9 +35,7 @@ jobs:
         run: npm test
 
       - name: Notification
-        if: cancelled() == false
-        uses: yanzay/notify-telegram@v0.1.0
+        uses: appleboy/telegram-action@master
         with:
-          botToken: ${{ secrets.BOT_TOKEN }}
-          chatId: ${{ secrets.CHAT_ID }}
-          jobStatus: ${{ job.status }}
+          token: ${{ secrets.BOT_TOKEN }}
+          to: ${{ secrets.CHAT_ID }}
