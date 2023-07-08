@@ -8,6 +8,8 @@ env:
   cancelled: ❌
   skipped: ⭕
   node_version: 18
+  'true': ✅
+  'false': 🔴
 
 jobs:
   # test:
@@ -89,7 +91,7 @@ jobs:
           token: ${{ secrets.BOT_TOKEN }}
           to: ${{ secrets.CHAT_ID }}
           message: |
-            Release : ${{ env[steps.release.conclusion] }}
+            Release : ${{ env[steps.release.release_created] }}
             Tag: ${{ steps.version.outputs.release_tag }}
 
 
