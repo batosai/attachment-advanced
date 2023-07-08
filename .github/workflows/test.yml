@@ -91,7 +91,7 @@ jobs:
 
 
   npm-publish:
-    name: NPM publish
+    name: Publish
     needs: release
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-22.04
