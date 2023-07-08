@@ -1,0 +1,120 @@
+
+name: Test & Publish
+on: [push]
+
+env:
+  success: ✅
+  failure: 🔴
+  cancelled: ❌
+  node_version: 18
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Install libvips
+        run: sudo apt-get install -y libvips-dev
+
+      - name: Install poppler
+        run: sudo apt-get install -y poppler-utils
+
+      - name: Install libreoffice
+        run: sudo apt-get install -y libreoffice libreoffice-core
+
+      - name: Install ffmpeg
+        run: sudo apt-get install -y ffmpeg
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.node_version }}
+          registry-url: https://registry.npmjs.org/
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+
+      - name: Notification
+        if: ${{ always() }}
+        uses: appleboy/telegram-action@master
+        with:
+          token: ${{ secrets.BOT_TOKEN }}
+          to: ${{ secrets.CHAT_ID }}
+          message: |
+            ${{ env[job.status] }} ${{ github.actor }} created commit:
+            ${{ github.event.commits[0].message }}
+
+            Repository: ${{ github.repository }}
+            See changes: https://github.com/${{ github.repository }}/commit/${{ github.sha }}
+
+
+  release:
+    name: Release
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-22.04
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Create tag and release
+        uses: halvardssm/github-action-tag-release@1.0.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: "./package.json" # optional, will use ./package.json by default
+
+      - run: |
+          echo 'Release created: ${{ steps.version.outputs.release_created }}' # 'true' or 'false'
+          echo 'Release exists: ${{ steps.version.outputs.release_exists }}' # 'true' or 'false'
+          echo 'Release tag: ${{ steps.version.outputs.release_tag }}' # The tag from package.json
+
+      - if: ${{ steps.release.outputs.release_exists == 'true' }}
+        run: |
+
+      - name: Notification
+        if: ${{ always() }}
+        uses: appleboy/telegram-action@master
+        with:
+          token: ${{ secrets.BOT_TOKEN }}
+          to: ${{ secrets.CHAT_ID }}
+          message: |
+            Release : ${{ env[job.status] }}
+            Tag: ${{ steps.version.outputs.release_tag }}
+
+
+
+  npm-publish:
+    name: Publish
+    needs: release
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.node_version }}
+          registry-url: https://registry.npmjs.org/
+
+      - run: npm install
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Notification
+        if: ${{ always() }}
+        uses: appleboy/telegram-action@master
+        with:
+          token: ${{ secrets.BOT_TOKEN }}
+          to: ${{ secrets.CHAT_ID }}
+          message: |
+            npm publish : ${{ env[job.status] }}
