@@ -288,7 +288,7 @@ test.group('Attachment | fromFile', (group) => {
     const Drive = app.container.resolveBinding('Adonis/Core/Drive')
     assert.isTrue(await Drive.exists(body.name))
     assert.isTrue(await Drive.exists(body.variants.thumbnail.name))
-  })//.disableTimeout()
+  }).disableTimeout()
 
   test('create attachment from the user uploaded file with mp4 file', async ({ assert }) => {
     const server = createServer((req, res) => {
