@@ -60,23 +60,23 @@ jobs:
   release:
     name: Release
     needs: test
-    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-22.04
     steps:
 
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Create tag and release
+      - id: release
+        name: Create tag and release
         uses: halvardssm/github-action-tag-release@1.0.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           path: "./package.json" # optional, will use ./package.json by default
 
       - run: |
-          echo 'Release created: ${{ steps.version.outputs.release_created }}' # 'true' or 'false'
-          echo 'Release exists: ${{ steps.version.outputs.release_exists }}' # 'true' or 'false'
-          echo 'Release tag: ${{ steps.version.outputs.release_tag }}' # The tag from package.json
+          echo 'Release created: ${{ steps.release.outputs.release_created }}' # 'true' or 'false'
+          echo 'Release exists: ${{ steps.release.outputs.release_exists }}' # 'true' or 'false'
+          echo 'Release tag: ${{ steps.release.outputs.release_tag }}' # The tag from package.json
 
       - if: ${{ steps.release.outputs.release_exists == 'true' }}
         run: |
