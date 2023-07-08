@@ -35,7 +35,22 @@ jobs:
         run: npm test
 
       - name: Notification
+        uses: xinthink/action-telegram@v1.1
+        with:
+          botToken: ${{ secrets.BOT_TOKEN }}
+          chatId: ${{ secrets.CHAT_ID }}
+          jobStatus: ${{ job.status }}
+
+      - name: Notification 2
         uses: appleboy/telegram-action@master
         with:
           token: ${{ secrets.BOT_TOKEN }}
           to: ${{ secrets.CHAT_ID }}
+          message: |
+            ${{ github.actor }} created commit:
+            Commit message: ${{ github.event.commits[0].message }}
+            Job Status: ${{ job.status }}
+
+            Repository: ${{ github.repository }}
+
+            See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
