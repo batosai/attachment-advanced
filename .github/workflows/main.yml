@@ -6,7 +6,10 @@ env:
   success: ✅
   failure: 🔴
   cancelled: ❌
+  skipped: ⭕
   node_version: 18
+  true: ✅
+  false: 🔴
 
 jobs:
   test:
@@ -65,8 +68,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Create tag and release
-        id: release
+      - id: release
+        name: Create tag and release
         uses: halvardssm/github-action-tag-release@1.0.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -87,7 +90,7 @@ jobs:
           to: ${{ secrets.CHAT_ID }}
           message: |
             Repository: ${{ github.repository }}
-            Release : ${{ env[job.status] }}
+            Release : ${{ env[steps.release.outputs.release_created] }}
             Tag: ${{ steps.release.outputs.release_tag }}
 
 
