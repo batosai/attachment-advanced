@@ -34,19 +34,12 @@ jobs:
       - name: Run tests
         run: npm test
 
-      - name: Notification
-        uses: xinthink/action-telegram@v1.1
-        with:
-          botToken: ${{ secrets.BOT_TOKEN }}
-          chatId: ${{ secrets.CHAT_ID }}
-          jobStatus: ${{ job.status }}
-
-      - name: Notification 2
+      - name: Notification Success
+        if: job.status == 'success'
         uses: appleboy/telegram-action@master
         with:
           token: ${{ secrets.BOT_TOKEN }}
           to: ${{ secrets.CHAT_ID }}
-          if: job.status == 'success'
           message: |
             @${{ github.actor }} created commit:
             Commit message: ${{ github.event.commits[0].message }}
@@ -55,7 +48,13 @@ jobs:
             Repository: ${{ github.repository }}
 
             See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
-          if: job.status != 'success'
+
+      - name: Notification Error
+        if: job.status != 'success'
+        uses: appleboy/telegram-action@master
+        with:
+          token: ${{ secrets.BOT_TOKEN }}
+          to: ${{ secrets.CHAT_ID }}
           message: |
             @${{ github.actor }} created commit:
             Commit message: ${{ github.event.commits[0].message }}
