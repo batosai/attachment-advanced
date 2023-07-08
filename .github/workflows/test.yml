@@ -3,7 +3,7 @@ name: Test CI
 on: [push]
 
 env:
-  STATE:
+  - STATE:
     - success: ✅
     - failure: 🔴
 
