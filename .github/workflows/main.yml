@@ -46,6 +46,7 @@ jobs:
         with:
           token: ${{ secrets.BOT_TOKEN }}
           to: ${{ secrets.CHAT_ID }}
+          disable_web_page_preview: true
           message: |
             ${{ env[job.status] }} ${{ github.actor }} created commit in ${{ github.ref }} branch:
             ${{ github.event.commits[0].message }}
@@ -57,7 +58,7 @@ jobs:
   release:
     name: Release
     needs: test
-    if: github.ref == 'refs/heads/master'
+    if: github.ref_name == 'master'
     runs-on: ubuntu-22.04
     steps:
 
@@ -70,14 +71,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           path: "./package.json" # optional, will use ./package.json by default
 
-      - run: |
-          echo 'Release created: ${{ steps.version.outputs.release_created }}' # 'true' or 'false'
-          echo 'Release exists: ${{ steps.version.outputs.release_exists }}' # 'true' or 'false'
-          echo 'Release tag: ${{ steps.version.outputs.release_tag }}' # The tag from package.json
-
-      - if: ${{ steps.release.outputs.release_exists == 'true' }}
-        run: |
-
       - name: Notification
         if: ${{ always() }}
         uses: appleboy/telegram-action@master
@@ -85,15 +78,16 @@ jobs:
           token: ${{ secrets.BOT_TOKEN }}
           to: ${{ secrets.CHAT_ID }}
           message: |
+            Repository: ${{ github.repository }}
             Release : ${{ env[job.status] }}
-            Tag: ${{ steps.version.outputs.release_tag }}
+            Tag: ${{ github.event.release.tag_name }}
 
 
 
   npm-publish:
     name: Publish
     needs: release
-    if: github.ref == 'refs/heads/master'
+    if: github.ref_name == 'master'
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
@@ -117,4 +111,5 @@ jobs:
           token: ${{ secrets.BOT_TOKEN }}
           to: ${{ secrets.CHAT_ID }}
           message: |
+            Repository: ${{ github.repository }}
             npm publish : ${{ env[job.status] }}
