@@ -8,8 +8,8 @@ env:
   cancelled: ❌
   skipped: ⭕
   node_version: 18
-  'true': ✅
-  'false': 🔴
+  true: ✅
+  false: 🔴
 
 jobs:
   # test:
