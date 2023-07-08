@@ -34,3 +34,10 @@ jobs:
       - name: Run tests
         run: npm test
 
+      - name: Notification
+        if: cancelled() == false
+        uses: xinthink/action-telegram@v1.1
+        with:
+          botToken: ${{ secrets.BotToken }}
+          chatId: ${{ secrets.ChatID }}
+          jobStatus: ${{ job.status }}
