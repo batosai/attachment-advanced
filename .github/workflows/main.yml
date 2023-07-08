@@ -47,7 +47,7 @@ jobs:
           token: ${{ secrets.BOT_TOKEN }}
           to: ${{ secrets.CHAT_ID }}
           message: |
-            ${{ env[job.status] }} ${{ github.actor }} created commit:
+            ${{ env[job.status] }} ${{ github.actor }} created commit in ${{ github.ref }} branch:
             ${{ github.event.commits[0].message }}
 
             Repository: ${{ github.repository }}
@@ -57,7 +57,7 @@ jobs:
   release:
     name: Release
     needs: test
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-22.04
     steps:
 
@@ -93,7 +93,7 @@ jobs:
   npm-publish:
     name: Publish
     needs: release
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
