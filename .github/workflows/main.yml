@@ -48,7 +48,7 @@ jobs:
           to: ${{ secrets.CHAT_ID }}
           disable_web_page_preview: true
           message: |
-            ${{ env[job.status] }} ${{ github.actor }} created commit in ${{ github.ref }} branch:
+            ${{ env[job.status] }} ${{ github.actor }} created commit in ${{ github.ref_name }} branch:
             ${{ github.event.commits[0].message }}
 
             Repository: ${{ github.repository }}
