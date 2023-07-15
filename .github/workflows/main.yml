@@ -51,11 +51,12 @@ jobs:
           to: ${{ secrets.CHAT_ID }}
           disable_web_page_preview: true
           message: |
-            ${{ env[job.status] }} ${{ github.actor }} created commit in ${{ github.ref_name }} branch:
+            Test ${{ env[job.status] }} by ${{ github.actor }} for commit in ${{ github.ref_name }} branch:
             ${{ github.event.commits[0].message }}
 
             Repository: ${{ github.repository }}
             See changes: https://github.com/${{ github.repository }}/commit/${{ github.sha }}
+            Github action: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
 
   release:
@@ -124,3 +125,4 @@ jobs:
           message: |
             Repository: ${{ github.repository }}
             npm publish : ${{ env[job.status] }}
+            npm url: https://www.npmjs.com/package/@jrmc/${{ github.repository }}
