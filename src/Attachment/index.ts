@@ -13,7 +13,6 @@
 
 import fs from 'node:fs'
 import { Exception } from '@poppinss/utils'
-import sizeOf from 'image-size'
 import { cuid } from '@poppinss/utils/build/helpers'
 import type { MultipartFileContract } from '@ioc:Adonis/Core/BodyParser'
 import type { DriveManagerContract, ContentHeaders } from '@ioc:Adonis/Core/Drive'
@@ -26,6 +25,7 @@ import type {
 } from '@ioc:Adonis/Addons/AttachmentAdvanced'
 import { Variant } from './variant'
 import {
+  getDimensions,
   pdfToImage,
   videoToImage,
   documentToImage,
@@ -418,7 +418,7 @@ export class Attachment implements AttachmentContract {
     /**
      * Assign dimension
      */
-    const dimensions = sizeOf(this.file?.filePath!)
+    const dimensions = await getDimensions(this.file?.filePath!, this.mimeType)
     if (dimensions) {
       this.width = dimensions.width!
       this.height = dimensions.height!

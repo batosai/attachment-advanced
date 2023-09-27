@@ -13,7 +13,15 @@ import { cuid } from '@poppinss/utils/build/helpers'
 import { Poppler } from 'node-poppler'
 import ffmpeg from 'fluent-ffmpeg'
 import convert from 'node-convert'
+import sizeOf from 'image-size'
 import { Attachment } from '.'
+
+export const getDimensions = async (filePath, mimeType) => {
+  if (isImage(mimeType)) {
+    return sizeOf(filePath)
+  }
+  return false
+}
 
 export const pdfToImage = async (pdfPath) => {
   const { pdf } = Attachment.getConfig()
