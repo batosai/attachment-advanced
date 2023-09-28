@@ -26,7 +26,10 @@ declare module '@ioc:Adonis/Addons/AttachmentAdvanced' {
    */
   export type AttachmentAttributes = {
     name?: string
+    originalName?: string
     size: number
+    width?: number
+    height?: number
     extname: string
     mimeType: string
     variants: object
@@ -67,6 +70,11 @@ declare module '@ioc:Adonis/Addons/AttachmentAdvanced' {
     name: string
 
     /**
+     * The original name is available only when "isPersisted" is true.
+     */
+    originalName: string
+
+    /**
      * The url is available only when "isPersisted" is true.
      */
     url: string
@@ -75,6 +83,16 @@ declare module '@ioc:Adonis/Addons/AttachmentAdvanced' {
      * The file size in bytes
      */
     size: number
+
+    /**
+     * The file width
+     */
+    width: number
+
+    /**
+     * The file height
+     */
+    height: number
 
     /**
      * The file extname. Inferred from the bodyparser file extname

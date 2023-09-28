@@ -1,6 +1,6 @@
 {
   "name": "@jrmc/attachment-advanced",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "Turn any field on your Lucid model to an attachment data type",
   "main": "build/providers/AttachmentAdvancedProvider.js",
   "files": [
@@ -104,6 +104,7 @@
     "@poppinss/utils": "^5.0.0",
     "file-type": "^16.5.4",
     "fluent-ffmpeg": "^2.1.2",
+    "image-size": "^1.0.2",
     "node-convert": "^0.1.1",
     "node-poppler": "^6.2.1",
     "sharp": "^0.32.0"

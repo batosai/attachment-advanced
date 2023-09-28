@@ -25,6 +25,7 @@ import type {
 } from '@ioc:Adonis/Addons/AttachmentAdvanced'
 import { Variant } from './variant'
 import {
+  getDimensions,
   pdfToImage,
   videoToImage,
   documentToImage,
@@ -160,6 +161,11 @@ export class Attachment implements AttachmentContract {
   public name: string
 
   /**
+   * The original name is available only when "isPersisted" is true.
+   */
+  public originalName: string
+
+  /**
    * The url is available only when "isPersisted" is true.
    */
   public url: string
@@ -168,6 +174,16 @@ export class Attachment implements AttachmentContract {
    * The file size in bytes
    */
   public size = this.attributes.size
+
+  /**
+   * The file width
+   */
+  public width: number
+
+  /**
+   * The file height
+   */
+  public height: number
 
   /**
    * The file extname. Inferred from the bodyparser file extname
@@ -209,6 +225,18 @@ export class Attachment implements AttachmentContract {
   constructor(private attributes: AttachmentAttributes, private file?: MultipartFileContract) {
     if (this.attributes.name) {
       this.name = this.attributes.name
+    }
+    if (this.attributes.name) {
+      this.name = this.attributes.name
+    }
+    if (this.attributes.originalName) {
+      this.originalName = this.attributes.originalName
+    }
+    if (this.attributes.width) {
+      this.width = this.attributes.width
+    }
+    if (this.attributes.height) {
+      this.height = this.attributes.height
     }
     if (this.attributes.variants) {
       this.variants = this.attributes.variants
@@ -384,6 +412,19 @@ export class Attachment implements AttachmentContract {
     this.name = this.file!.fileName!
 
     /**
+     * Assign original name to the file
+     */
+    this.originalName = this.file!.clientName
+
+    /**
+     * Assign dimension
+     */
+    const dimensions = await getDimensions(this.file?.filePath!, this.mimeType)
+    if (dimensions) {
+      this.width = dimensions.width!
+      this.height = dimensions.height!
+    }
+    /**
      * File has been persisted
      */
     this.isPersisted = true
@@ -506,8 +547,11 @@ export class Attachment implements AttachmentContract {
   public toObject(): AttachmentAttributes {
     return {
       name: this.name,
+      originalName: this.originalName,
       extname: this.extname,
       size: this.size,
+      width: this.width,
+      height: this.height,
       mimeType: this.mimeType,
       variants: this.variants,
     }

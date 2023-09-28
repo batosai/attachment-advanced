@@ -13,7 +13,32 @@ import { cuid } from '@poppinss/utils/build/helpers'
 import { Poppler } from 'node-poppler'
 import ffmpeg from 'fluent-ffmpeg'
 import convert from 'node-convert'
+import sizeOf from 'image-size'
 import { Attachment } from '.'
+
+export const getDimensions = async (filePath, mimeType) => {
+  const { video } = Attachment.getConfig()
+
+  if (isImage(mimeType)) {
+    return sizeOf(filePath)
+  } else if (isVideo(mimeType)) {
+    if (video) {
+      return new Promise<any>((resolve) => {
+        ffmpeg(filePath).ffprobe(0, (err, data) => {
+          if (err) {
+            console.log(err)
+          }
+
+          resolve({
+            width: data.streams[0].width,
+            height: data.streams[0].height,
+          })
+        })
+      })
+    }
+  }
+  return false
+}
 
 export const pdfToImage = async (pdfPath) => {
   const { pdf } = Attachment.getConfig()

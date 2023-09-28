@@ -47,11 +47,13 @@ The `attachment-advanced` package requires `@adonisjs/lucid >= v16.3.1` and `@ad
 
 Also, it relies on [AdonisJS drive](https://docs.adonisjs.com/guides/drive) for writing files on the disk.
 
-For document preview, it's required `LibreOffice` or `OpenOffice` software.
+For document preview, it's required [LibreOffice](https://www.libreoffice.org/) or `OpenOffice` software.
 
-If you only want PDF documents, prefere `poppler` software.
+If you only want PDF documents, prefere [poppler](https://poppler.freedesktop.org/) software.
 
 For video preview, it's required [FFmpeg](http://www.ffmpeg.org) software.
+
+[Help install on wiki](https://github.com/batosai/attachment-advanced/wiki)
 
 ## Supported formats
 
