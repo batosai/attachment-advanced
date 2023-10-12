@@ -418,7 +418,7 @@ export class Attachment implements AttachmentContract {
     /**
      * Assign dimension
      */
-    const dimensions = await getDimensions(this.file?.filePath!, this.mimeType)
+    const dimensions = await getDimensions(this.file?.filePath, this.mimeType)
     if (dimensions) {
       this.width = dimensions.width!
       this.height = dimensions.height!

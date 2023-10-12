@@ -1,6 +1,6 @@
 {
   "name": "@jrmc/attachment-advanced",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Turn any field on your Lucid model to an attachment data type",
   "main": "build/providers/AttachmentAdvancedProvider.js",
   "files": [
