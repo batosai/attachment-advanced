@@ -419,11 +419,16 @@ export class Attachment implements AttachmentContract {
     /**
      * Assign dimension
      */
-    const dimensions = await getDimensions(this.file?.filePath, this.mimeType)
-    if (dimensions) {
-      this.width = dimensions.width!
-      this.height = dimensions.height!
+    try {
+      const dimensions = await getDimensions(this.file?.filePath, this.mimeType)
+      if (dimensions) {
+        this.width = dimensions.width!
+        this.height = dimensions.height!
+      }
+    } catch (error) {
+      console.error(error)
     }
+
     /**
      * File has been persisted
      */
