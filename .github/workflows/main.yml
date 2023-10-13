@@ -16,6 +16,9 @@ jobs:
     name: Test
     runs-on: ubuntu-22.04
     steps:
+      - name: Update packages
+        run: sudo apt-get update
+    
       - name: Install libvips
         run: sudo apt-get install -y libvips-dev
 
