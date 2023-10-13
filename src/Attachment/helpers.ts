@@ -9,22 +9,26 @@
 
 import os from 'node:os'
 import path from 'node:path'
-import { promisify } from 'node:util'
 import { cuid } from '@poppinss/utils/build/helpers'
 import { Poppler } from 'node-poppler'
 import ffmpeg from 'fluent-ffmpeg'
 import convert from 'node-convert'
-import imgSize from 'image-size'
+import sizeOf from 'image-size'
 import { Attachment } from '.'
-
-const sizeOf = promisify(imgSize)
 
 export const getDimensions = async (filePath, mimeType) => {
   const { video } = Attachment.getConfig()
 
   try {
     if (isImage(mimeType)) {
-      return sizeOf(filePath)
+      return new Promise<any>((resolve, reject) => {
+        const dimension = sizeOf(filePath)
+        if (dimension) {
+          resolve(dimension)
+        } else {
+          reject(false)
+        }
+      })
     } else if (isVideo(mimeType)) {
       if (video) {
         return new Promise<any>((resolve) => {
@@ -41,7 +45,9 @@ export const getDimensions = async (filePath, mimeType) => {
         })
       }
     }
-  } catch (error) {}
+  } catch (error) {
+    return error
+  }
 
   return false
 }
