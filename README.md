@@ -1,7 +1,7 @@
 # Attachment Advanced
 
 <div align="center">
-  <img src="./assets/banner.jpeg" />
+  <img src="https://github.com/batosai/attachment-advanced/assets/banner.jpeg" />
 </div>
 
 ---
