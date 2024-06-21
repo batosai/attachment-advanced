@@ -1,4 +1,4 @@
-# Attachment Advanced
+# Attachment Advanced for AdonisJS 5
 
 <div align="center">
   <img src="https://github.com/batosai/attachment-advanced/blob/master/assets/banner.jpeg" />
@@ -7,6 +7,8 @@
 ---
 
 [![license-image]][license-url] [![typescript-image]][typescript-url]
+
+/!\ [New version](https://github.com/batosai/adonis-attachment) in currently development for AdonisJA 6
 
 A simple, opinionated package to convert any column on your Lucid model to an attachment data type.
 
